@@ -9,7 +9,7 @@ var replacer = strings.NewReplacer("-", " ", "_", " ")
 func Abbreviate(s string) string {
 	var acr string
 	s1 := replacer.Replace(s)
-	words := strings.Split(s1 , " ")
+	words := strings.Split(s1, " ")
 	for _, word := range words {
 		if word == "" {
 			continue
