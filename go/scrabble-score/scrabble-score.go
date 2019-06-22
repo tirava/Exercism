@@ -1,16 +1,17 @@
 // Package scrabble implements computing the scrabble score words.
 package scrabble
 
-import "strings"
+import "unicode"
 
 // Score computes scrabble scores.
 func Score(word string) (scores int) {
-	word = strings.ToUpper(word)
+	//word = strings.ToUpper(word)
 
 	for _, s := range word {
+		s = unicode.ToUpper(s)
 		switch s {
 		case 'A', 'E', 'I', 'O', 'U', 'L', 'N', 'R', 'S', 'T':
-			scores += 1
+			scores++
 		case 'D', 'G':
 			scores += 2
 		case 'B', 'C', 'M', 'P':
