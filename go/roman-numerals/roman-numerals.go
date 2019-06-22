@@ -1,4 +1,4 @@
-// Package roman-numerals implements conversion from normal numbers to Roman Numerals.
+// Package romannumerals implements conversion from normal numbers to Roman Numerals.
 package romannumerals
 
 import "errors"
