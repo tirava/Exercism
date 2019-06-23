@@ -19,6 +19,6 @@ func IsIsogram(phrase string) bool {
 			return false
 		}
 	}
-	
+
 	return true
 }
