@@ -19,7 +19,8 @@ func IsIsogram(phrase string) bool {
 		}
 
 		for j := i + 1; j < len(phrase); j++ {
-			if phrase[j] == byte(s) {
+			//if phrase[j] == byte(s) {
+			if rune(phrase[j]) == s {
 				return false
 			}
 		}

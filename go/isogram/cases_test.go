@@ -74,4 +74,9 @@ var testCases = []struct {
 		input:       "angola",
 		expected:    false,
 	},
+	{
+		description: "rune characters",
+		input:       "日本語",
+		expected:    true,
+	},
 }
