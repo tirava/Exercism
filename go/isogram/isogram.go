@@ -1,10 +1,7 @@
 // Package isogram implements determination if a word or phrase is an isogram.
 package isogram
 
-import (
-	"strings"
-	"unicode"
-)
+import "unicode"
 
 //const (
 //	space  = ' '
@@ -12,37 +9,37 @@ import (
 //)
 
 // IsIsogram returns true if string is isogram.
-//func IsIsogram(phrase string) bool {
-//
-//	phrase = strings.ToLower(phrase)
-//
-//	for i, s := range phrase {
-//		if s == space || s == hyphen {
-//			continue
-//		}
-//
-//		for j := i + 1; j < len(phrase); j++ {
-//			//if phrase[j] == byte(s) {
-//			if rune(phrase[j]) == s {
-//				return false
-//			}
-//		}
-//	}
-//
-//	return true
-//}
-func IsIsogram(input string) bool {
-	var foundRunes = map[rune]bool{}
-	input = strings.ToLower(input)
+func IsIsogram(phrase string) bool {
 
-	for _, val := range input {
-		if !unicode.IsLetter(val) {
+	var foundRunes = map[rune]bool{}
+	var sl rune
+
+	for _, s := range phrase {
+		if !unicode.IsLetter(s) {
 			continue
 		}
-		if foundRunes[val] {
+		sl = unicode.ToLower(s)
+		if foundRunes[sl] {
 			return false
 		}
-		foundRunes[val] = true
+		foundRunes[sl] = true
 	}
+
 	return true
 }
+
+//func IsIsogram(input string) bool {
+//	var foundRunes = map[rune]bool{}
+//	input = strings.ToLower(input)
+//
+//	for _, val := range input {
+//		if !unicode.IsLetter(val) {
+//			continue
+//		}
+//		if foundRunes[val] {
+//			return false
+//		}
+//		foundRunes[val] = true
+//	}
+//	return true
+//}

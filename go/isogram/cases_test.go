@@ -79,4 +79,14 @@ var testCases = []struct {
 		input:       "日本語",
 		expected:    true,
 	},
+	{
+		description: "russian characters",
+		input:       "Киркоров",
+		expected:    false,
+	},
+	{
+		description: "russian characters 1",
+		input:       "Женя",
+		expected:    true,
+	},
 }
