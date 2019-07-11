@@ -27,11 +27,18 @@ func Encode(pt string) (ct string) {
 	for i := 0; i < rows; i++ {
 		if i == rows-1 {
 			lenCol = ll
-			spaces = strings.Repeat("*", cols-ll)
+			spaces = strings.Repeat(" ", cols-ll)
 		}
 		sl = append(sl, ct[i*cols:i*cols+lenCol]+spaces)
 		//fmt.Println(sl)
 	}
+	s := ""
+	for i := 0; i < cols; i++ {
+		for _, ss := range sl {
+			s += string(ss[i])
+		}
+	}
+	fmt.Println(s)
 	fmt.Println(cols, rows, ll, sl)
 	return
 }
