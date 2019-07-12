@@ -2,8 +2,8 @@
 package encode
 
 import (
-	"fmt"
 	"strconv"
+	"unicode"
 )
 
 type runCounts map[rune]int
@@ -18,10 +18,8 @@ func RunLengthEncode(in string) (out string) {
 	counts := make(runCounts)
 
 	counts[inRune[0]]++
-	//fmt.Println("counts[0]:", counts)
 
 	for i := 1; i < len(inRune); i++ {
-		//fmt.Println(string(inRune[i]))
 		if inRune[i] == inRune[i-1] {
 			counts[inRune[i]]++
 			if i == len(inRune)-1 {
@@ -37,20 +35,46 @@ func RunLengthEncode(in string) (out string) {
 			if i == len(inRune)-1 {
 				out += string(inRune[i])
 			}
-			//fmt.Println("out:", out)
 		}
-		//println(i, string(inRune[i]))
 	}
 
-	fmt.Println(string(inRune), out)
 	return out
 }
 
 // RunLengthDecode returns RLE decoding.
-func RunLengthDecode(input string) string {
-	if len(input) < 2 {
+func RunLengthDecode(in string) (out string) {
+	if len(in) < 2 {
 		return ""
 	}
 
-	return ""
+	inRune := []rune(in)
+	ds, dd, j := "", 0, 0
+
+	//LOOP:
+	for i := 0; i < len(inRune); i++ {
+		if unicode.IsLetter(inRune[i]) || unicode.IsSpace(inRune[i]) {
+			out += string(inRune[i])
+		} else if unicode.IsDigit(inRune[i]) {
+			ds = ""
+			for j = i; j < len(inRune); j++ { // get all digits
+				//i++
+				dd = int(inRune[j] - 48)
+				if dd >= 0 && dd <= 9 {
+					ds += string(inRune[j])
+					i++
+				} else {
+					dd, _ = strconv.Atoi(ds)
+					for k := 0; k < dd; k++ {
+						out += string(inRune[i])
+					}
+					break
+				}
+			}
+
+		} else {
+			return ""
+		}
+	}
+
+	return out
 }
