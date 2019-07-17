@@ -14,32 +14,23 @@ func Valid(number string) bool {
 	}
 
 	lenNumber := len(number)
-	numbers := make([]int, lenNumber)
-	var numInt, i, d int
+	var sum int
 
-	for i = 0; i < lenNumber; i++ {
-		numInt = int(number[lenNumber-1-i]) - 48
+	for i := 0; i < lenNumber; i++ {
+		numInt := int(number[lenNumber-1-i]) - '0'
 		if numInt > 9 {
 			return false
 		}
 		if i%2 == 0 {
-			numbers[i] = numInt
+			sum += numInt
 		} else {
-			d = numInt * 2
+			d := numInt * 2
 			if d > 9 {
 				d -= 9
 			}
-			numbers[i] = d
+			sum += d
 		}
 	}
 
-	var sum int
-	for _, n := range numbers {
-		sum += n
-	}
-	if sum%10 == 0 {
-		return true
-	}
-
-	return false
+	return sum%10 == 0
 }
