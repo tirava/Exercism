@@ -23,13 +23,13 @@ func New(hour, minute int) (c Clock) {
 // Add minutes to Clock.
 func (c Clock) Add(minutes int) Clock {
 	minutes += c.hours*60 + c.minutes
-	return c.normalize(minutes)
+	return c.min2Clock(minutes)
 }
 
 // Subtract minutes from Clock.
 func (c Clock) Subtract(minutes int) Clock {
 	minutes = (c.hours*60+c.minutes-minutes)%1440 + 1440
-	return c.normalize(minutes)
+	return c.min2Clock(minutes)
 }
 
 // String is stringer for Clock type.
@@ -37,8 +37,8 @@ func (c Clock) String() string {
 	return fmt.Sprintf("%02d:%02d", c.hours, c.minutes)
 }
 
-// normalize does some calculations for Add & Subtract.
-func (c Clock) normalize(minutes int) Clock {
+// min2Clock converts minutes to Clock type.
+func (c Clock) min2Clock(minutes int) Clock {
 	c.hours = minutes / 60
 	if c.hours >= 24 {
 		c.hours %= 24
