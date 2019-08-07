@@ -39,13 +39,7 @@ func (c Clock) String() string {
 
 // min2Clock converts minutes to Clock type.
 func (c Clock) min2Clock(minutes int) Clock {
-	c.hours = minutes / 60
-	if c.hours >= 24 {
-		c.hours %= 24
-	}
-	c.minutes = minutes - c.hours*60
-	if c.minutes >= 60 {
-		c.minutes %= 60
-	}
+	c.hours = minutes / 60 % 24
+	c.minutes = (minutes - c.hours*60) % 60
 	return c
 }
