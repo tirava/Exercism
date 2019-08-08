@@ -14,10 +14,7 @@ type Clock struct {
 // New is a "constructor".
 func New(hour, minute int) (c Clock) {
 	minutes := hour*60 + minute
-	if minutes < 0 {
-		return c.min2Clock(minutes%1440 + 1440)
-	}
-	return c.min2Clock(minutes)
+	return c.min2Clock(minutes%1440 + 1440)
 }
 
 // Add minutes to Clock.
