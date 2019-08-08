@@ -15,21 +15,19 @@ type Clock struct {
 func New(hour, minute int) (c Clock) {
 	minutes := hour*60 + minute
 	if minutes < 0 {
-		return c.Subtract(-minutes)
+		return c.min2Clock(minutes%1440 + 1440)
 	}
-	return c.Add(minutes)
+	return c.min2Clock(minutes)
 }
 
 // Add minutes to Clock.
 func (c Clock) Add(minutes int) Clock {
-	minutes += c.hours*60 + c.minutes
-	return c.min2Clock(minutes)
+	return c.min2Clock(minutes + c.hours*60 + c.minutes)
 }
 
 // Subtract minutes from Clock.
 func (c Clock) Subtract(minutes int) Clock {
-	minutes = (c.hours*60+c.minutes-minutes)%1440 + 1440
-	return c.min2Clock(minutes)
+	return c.min2Clock((c.hours*60+c.minutes-minutes)%1440 + 1440)
 }
 
 // String is stringer for Clock type.
@@ -40,6 +38,6 @@ func (c Clock) String() string {
 // min2Clock converts minutes to Clock type.
 func (c Clock) min2Clock(minutes int) Clock {
 	c.hours = minutes / 60 % 24
-	c.minutes = (minutes - c.hours*60) % 60
+	c.minutes = minutes % 60
 	return c
 }
