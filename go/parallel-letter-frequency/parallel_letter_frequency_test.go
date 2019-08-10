@@ -1,6 +1,7 @@
 package letter
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -52,6 +53,8 @@ func TestConcurrentFrequency(t *testing.T) {
 	seq := OriginalFrequency(euro + dutch + us)
 	con := ConcurrentFrequency([]string{euro, dutch, us})
 	if !reflect.DeepEqual(con, seq) {
+		fmt.Println("seq:", seq)
+		fmt.Println("con:", con)
 		t.Fatal("ConcurrentFrequency wrong result")
 	}
 }

@@ -1,6 +1,10 @@
 // Package letter implements concurrency counting letters in some languages.
 package letter
 
+import (
+	"sync"
+)
+
 // FreqMap records the frequency of each rune in a given text.
 type FreqMap map[rune]int
 
@@ -16,13 +20,29 @@ func Frequency(s string) FreqMap {
 
 // ConcurrentFrequency counts the frequency concurrently
 func ConcurrentFrequency(s []string) FreqMap {
-	m := FreqMap{}
-	for _, text := range s {
-		mX := Frequency(text)
-		for k, v := range mX {
-			m[k] += v
-		}
-		//fmt.Println(m)
+
+	type FreqMapCon struct {
+		sync.RWMutex
+		FreqMap
 	}
-	return m
+
+	m := FreqMapCon{}
+	m.FreqMap = make(FreqMap)
+	wg := &sync.WaitGroup{}
+
+	for _, text := range s {
+		wg.Add(1)
+		go func(text string) {
+			m.Lock()
+			for _, r := range text {
+				m.FreqMap[r]++
+			}
+			m.Unlock()
+			wg.Done()
+		}(text)
+	}
+
+	wg.Wait()
+
+	return m.FreqMap
 }
