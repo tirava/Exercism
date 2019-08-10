@@ -23,16 +23,16 @@ func Frequency(s string) FreqMap {
 // ConcurrentFrequency counts the frequency concurrently
 func ConcurrentFrequency(s []string) FreqMap {
 
-	m := make(FreqMap, maxLettersInAlphabet)
-	fm := make([]FreqMap, len(s))
+	ls := len(s)
+	m := make(FreqMap, maxLettersInAlphabet) // result
+	sfm := make([]FreqMap, ls) // slice for calc goroutines
 	wg := &sync.WaitGroup{}
-	ch := make(chan FreqMap, len(s))
+	ch := make(chan FreqMap, ls) // channel for merging maps
 
-	//mu := &sync.RWMutex{}
-
+	// goroutine for merging maps
 	wg.Add(1)
 	go func(ch chan FreqMap) {
-		for i := 0; i < len(s); i++ {
+		for i := 0; i < ls; i++ {
 			fm := <-ch
 			for k, v := range fm {
 				m[k] += v
@@ -41,15 +41,16 @@ func ConcurrentFrequency(s []string) FreqMap {
 		wg.Done()
 	}(ch)
 
+	// goroutines for calc letters
 	for i := range s {
-		fm[i] = make(FreqMap, maxLettersInAlphabet)
+		sfm[i] = make(FreqMap, maxLettersInAlphabet)
 		wg.Add(1)
 		go func(text *string, index int) {
 			for _, r := range *text {
-				fm[index][r]++
+				sfm[index][r]++
 			}
 			wg.Done()
-			ch <- fm[index]
+			ch <- sfm[index]
 		}(&s[i], i)
 	}
 
