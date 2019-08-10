@@ -1,4 +1,4 @@
-// Package letter implements concurrency counting letters in some languages
+// Package letter implements concurrency counting letters in some languages.
 package letter
 
 // FreqMap records the frequency of each rune in a given text.
@@ -14,7 +14,15 @@ func Frequency(s string) FreqMap {
 	return m
 }
 
-func ConcurrentFrequency(s ...[]string) (m FreqMap) {
-
-	return
+// ConcurrentFrequency counts the frequency concurrently
+func ConcurrentFrequency(s []string) FreqMap {
+	m := FreqMap{}
+	for _, text := range s {
+		mX := Frequency(text)
+		for k, v := range mX {
+			m[k] += v
+		}
+		//fmt.Println(m)
+	}
+	return m
 }
