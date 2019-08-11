@@ -1,7 +1,7 @@
 // Package tree implements the tree building logic for an unsorted set of records.
 package tree
 
-import "fmt"
+import "sort"
 
 type Node struct {
 	ID       int
@@ -22,18 +22,22 @@ func Build(records []Record) (*Node, error) {
 
 	node := &Node{}
 
-	println("-----------")
+	//println("-----------")
 
 	for _, record := range records {
 		// find all unique parents
 		// and append new Node fo every
 		// sort
 
-		if node.ID == record.Parent && record.ID != 0 {
+		if node.ID == record.Parent && record.ID != record.Parent {
 			node.Children = append(node.Children, &Node{ID: record.ID})
 		}
 
-		fmt.Println(record)
+		sort.Slice(node.Children, func(i, j int) bool {
+			return node.Children[i] < node.Children[j]
+		})
+
+		//fmt.Println(record)
 		//if record.ID == 0 && record.Parent !=0 {
 		//	return nil, errors.New("error building tree")
 		//}
