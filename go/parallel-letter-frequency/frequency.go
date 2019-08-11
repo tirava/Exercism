@@ -1,10 +1,6 @@
 // Package letter implements concurrency counting letters in some languages.
 package letter
 
-import (
-	"sync"
-)
-
 // FreqMap records the frequency of each rune in a given text.
 type FreqMap map[rune]int
 
@@ -23,33 +19,20 @@ func Frequency(s string) FreqMap {
 // ConcurrentFrequency counts the frequency concurrently
 func ConcurrentFrequency(s []string) FreqMap {
 
-	ls := len(s)                             // faster & less alloc
-	m := make(FreqMap, maxLettersInAlphabet) // result
-	wg := &sync.WaitGroup{}
-	ch := make(chan FreqMap, ls) // channel for merging maps
+	m := make(FreqMap, maxLettersInAlphabet)
+	ch := make(chan FreqMap, len(s))
 
-	// goroutine for merging maps
-	wg.Add(1)
-	go func(ch chan FreqMap) {
-		for i := 0; i < ls; i++ {
-			fm := <-ch
-			for k, v := range fm {
-				m[k] += v
-			}
-		}
-		wg.Done()
-	}(ch)
-
-	// goroutines for calc letters
 	for i := range s {
-		wg.Add(1)
-		go func(text *string) {
-			ch <- Frequency(*text)
-			wg.Done()
+		go func(t *string) {
+			ch <- Frequency(*t)
 		}(&s[i])
 	}
 
-	wg.Wait()
+	for range s {
+		for k, v := range <-ch {
+			m[k] += v
+		}
+	}
 
 	return m
 }
