@@ -4,8 +4,6 @@ package letter
 // FreqMap records the frequency of each rune in a given text.
 type FreqMap map[rune]int
 
-const maxLettersInAlphabet = 48
-
 // Frequency counts the frequency of each rune in a given text and returns this
 // data as a FreqMap.
 func Frequency(s string) FreqMap {
@@ -19,8 +17,8 @@ func Frequency(s string) FreqMap {
 // ConcurrentFrequency counts the frequency concurrently
 func ConcurrentFrequency(s []string) FreqMap {
 
-	m := make(FreqMap, maxLettersInAlphabet)
-	ch := make(chan FreqMap, len(s))
+	m := FreqMap{}
+	ch := make(chan FreqMap)
 
 	for i := range s {
 		go func(t *string) {
