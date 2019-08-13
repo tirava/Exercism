@@ -1,7 +1,9 @@
 // Package tree implements the tree building logic for an unsorted set of records.
 package tree
 
-import "sort"
+import (
+	"sort"
+)
 
 type Node struct {
 	ID       int
@@ -22,26 +24,26 @@ func Build(records []Record) (*Node, error) {
 
 	node := &Node{}
 
-	//println("-----------")
+	calcNodes(records, node)
 
-	for _, record := range records {
-		// find all unique parents
-		// and append new Node fo every
-		// sort
-
-		if node.ID == record.Parent && record.ID != record.Parent {
-			node.Children = append(node.Children, &Node{ID: record.ID})
-		}
-
-		sort.Slice(node.Children, func(i, j int) bool {
-			return node.Children[i] < node.Children[j]
-		})
-
-		//fmt.Println(record)
-		//if record.ID == 0 && record.Parent !=0 {
-		//	return nil, errors.New("error building tree")
-		//}
-	}
+	//fmt.Println(record)
+	//if record.ID == 0 && record.Parent !=0 {
+	//	return nil, errors.New("error building tree")
+	//}
+	//}
 
 	return node, nil
+}
+
+func calcNodes(records []Record, node *Node) {
+	for _, record := range records {
+		if node.ID == record.Parent && record.ID != record.Parent {
+			newNode := &Node{ID: record.ID}
+			node.Children = append(node.Children, newNode)
+			calcNodes(records, newNode)
+		}
+	}
+	sort.Slice(node.Children, func(i, j int) bool {
+		return node.Children[i].ID < node.Children[j].ID
+	})
 }
