@@ -2,6 +2,7 @@
 package tree
 
 import (
+	"errors"
 	"sort"
 )
 
@@ -22,17 +23,28 @@ func Build(records []Record) (*Node, error) {
 		return nil, nil
 	}
 
-	node := &Node{}
+	err := checkErrors(records)
+	if err != nil {
+		return nil, err
+	}
 
+	node := &Node{}
 	calcNodes(records, node)
 
-	//fmt.Println(record)
-	//if record.ID == 0 && record.Parent !=0 {
-	//	return nil, errors.New("error building tree")
-	//}
-	//}
+	return node, err
+}
 
-	return node, nil
+func checkErrors(records []Record) error {
+	for _, record := range records {
+
+		if record.ID == 0 && record.Parent != 0 {
+			return errors.New("root node has parent")
+		}
+		//if record.ID == 0 && record.Parent != 0 {
+		//	return errors.New("no root node")
+		//}
+	}
+	return nil
 }
 
 func calcNodes(records []Record, node *Node) {
