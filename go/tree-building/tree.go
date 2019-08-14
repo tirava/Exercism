@@ -6,11 +6,13 @@ import (
 	"sort"
 )
 
+// Node is the base struct for nodes.
 type Node struct {
 	ID       int
 	Children []*Node
 }
 
+// Record is the base struct for input records
 type Record struct {
 	ID     int
 	Parent int
@@ -35,15 +37,18 @@ func Build(records []Record) (*Node, error) {
 }
 
 func checkErrors(records []Record) error {
+
 	hasRoot := false
-	duplicates := map[int]int{}
+	duplicates := make(map[int]int, len(records))
 
 	for _, record := range records {
 
+		if record.ID == 0 && record.Parent != 0 {
+			return errors.New("root node has parent")
+		}
 		if record.Parent >= record.ID && record.ID != 0 {
 			return errors.New("higher id parent of lower id")
 		}
-
 		if _, ok := duplicates[record.ID]; ok {
 			return errors.New("duplicate found")
 		}
@@ -53,11 +58,6 @@ func checkErrors(records []Record) error {
 		if record.ID == 0 {
 			hasRoot = true
 		}
-
-		if record.ID == 0 && record.Parent != 0 {
-			return errors.New("root node has parent")
-		}
-
 	}
 
 	if !hasRoot {
@@ -74,6 +74,7 @@ func checkErrors(records []Record) error {
 }
 
 func calcNodes(records []Record, node *Node) {
+
 	for _, record := range records {
 		if node.ID == record.Parent && record.ID != record.Parent {
 			newNode := &Node{ID: record.ID}
@@ -81,6 +82,7 @@ func calcNodes(records []Record, node *Node) {
 			calcNodes(records, newNode)
 		}
 	}
+
 	sort.Slice(node.Children, func(i, j int) bool {
 		return node.Children[i].ID < node.Children[j].ID
 	})

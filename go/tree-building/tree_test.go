@@ -2,6 +2,7 @@ package tree
 
 import (
 	"fmt"
+	"math/rand"
 	"reflect"
 	"testing"
 )
@@ -244,69 +245,69 @@ func TestMakeTreeFailure(t *testing.T) {
 	}
 }
 
-//func shuffleRecords(records []Record) []Record {
-//	rand := rand.New(rand.NewSource(42))
-//	newRecords := make([]Record, len(records))
-//	for i, idx := range rand.Perm(len(records)) {
-//		newRecords[i] = records[idx]
-//	}
-//	return newRecords
-//}
-//
-//// Binary tree
-//func makeTwoTreeRecords() []Record {
-//	records := make([]Record, 1<<16)
-//	for i := range records {
-//		if i == 0 {
-//			records[i] = Record{ID: 0}
-//		} else {
-//			records[i] = Record{ID: i, Parent: i >> 1}
-//		}
-//	}
-//	return shuffleRecords(records)
-//}
-//
-//var twoTreeRecords = makeTwoTreeRecords()
-//
-//func BenchmarkTwoTree(b *testing.B) {
-//	for i := 0; i < b.N; i++ {
-//		Build(twoTreeRecords)
-//	}
-//}
-//
-//// Each node but the root node and leaf nodes has ten children.
-//func makeTenTreeRecords() []Record {
-//	records := make([]Record, 10000)
-//	for i := range records {
-//		if i == 0 {
-//			records[i] = Record{ID: 0}
-//		} else {
-//			records[i] = Record{ID: i, Parent: i / 10}
-//		}
-//	}
-//	return shuffleRecords(records)
-//}
-//
-//var tenTreeRecords = makeTenTreeRecords()
-//
-//func BenchmarkTenTree(b *testing.B) {
-//	for i := 0; i < b.N; i++ {
-//		Build(tenTreeRecords)
-//	}
-//}
-//
-//func makeShallowRecords() []Record {
-//	records := make([]Record, 10000)
-//	for i := range records {
-//		records[i] = Record{ID: i, Parent: 0}
-//	}
-//	return shuffleRecords(records)
-//}
-//
-//var shallowRecords = makeShallowRecords()
-//
-//func BenchmarkShallowTree(b *testing.B) {
-//	for i := 0; i < b.N; i++ {
-//		Build(shallowRecords)
-//	}
-//}
+func shuffleRecords(records []Record) []Record {
+	rand := rand.New(rand.NewSource(42))
+	newRecords := make([]Record, len(records))
+	for i, idx := range rand.Perm(len(records)) {
+		newRecords[i] = records[idx]
+	}
+	return newRecords
+}
+
+// Binary tree
+func makeTwoTreeRecords() []Record {
+	records := make([]Record, 1<<16)
+	for i := range records {
+		if i == 0 {
+			records[i] = Record{ID: 0}
+		} else {
+			records[i] = Record{ID: i, Parent: i >> 1}
+		}
+	}
+	return shuffleRecords(records)
+}
+
+var twoTreeRecords = makeTwoTreeRecords()
+
+func BenchmarkTwoTree(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Build(twoTreeRecords)
+	}
+}
+
+// Each node but the root node and leaf nodes has ten children.
+func makeTenTreeRecords() []Record {
+	records := make([]Record, 10000)
+	for i := range records {
+		if i == 0 {
+			records[i] = Record{ID: 0}
+		} else {
+			records[i] = Record{ID: i, Parent: i / 10}
+		}
+	}
+	return shuffleRecords(records)
+}
+
+var tenTreeRecords = makeTenTreeRecords()
+
+func BenchmarkTenTree(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Build(tenTreeRecords)
+	}
+}
+
+func makeShallowRecords() []Record {
+	records := make([]Record, 10000)
+	for i := range records {
+		records[i] = Record{ID: i, Parent: 0}
+	}
+	return shuffleRecords(records)
+}
+
+var shallowRecords = makeShallowRecords()
+
+func BenchmarkShallowTree(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Build(shallowRecords)
+	}
+}
