@@ -12,7 +12,7 @@ type Node struct {
 	Children []*Node
 }
 
-// Record is the base struct for input records
+// Record is the base struct for input records.
 type Record struct {
 	ID     int
 	Parent int
@@ -38,7 +38,6 @@ func Build(records []Record) (*Node, error) {
 
 func checkErrors(records []Record) error {
 
-	hasRoot := false
 	duplicates := make(map[int]int, len(records))
 
 	for _, record := range records {
@@ -54,14 +53,6 @@ func checkErrors(records []Record) error {
 		}
 
 		duplicates[record.ID]++
-
-		if record.ID == 0 {
-			hasRoot = true
-		}
-	}
-
-	if !hasRoot {
-		return errors.New("no root node")
 	}
 
 	for i := 0; i < len(records); i++ {
