@@ -13,14 +13,17 @@ const (
 
 // Atbash returns ciphertext.
 func Atbash(s string) (res string) {
-	s = strings.ReplaceAll(s, " ", "")
-	s = strings.ReplaceAll(s, ",", "")
-	s = strings.ReplaceAll(s, ".", "")
-	s = strings.ToLower(s)
-	for i, r := range s {
-		if i%5 == 0 && i != 0 {
+	count := 0
+
+	for _, r := range s {
+		if unicode.IsSpace(r) || unicode.IsPunct(r) {
+			continue
+		}
+		r = unicode.ToLower(r)
+		if count%5 == 0 && count != 0 {
 			res += " "
 		}
+		count++
 		if unicode.IsLetter(r) {
 			indexC := strings.IndexRune(cipher, r)
 			res += string(plain[indexC])
@@ -28,5 +31,6 @@ func Atbash(s string) (res string) {
 			res += string(r)
 		}
 	}
+
 	return
 }
