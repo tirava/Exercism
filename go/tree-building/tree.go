@@ -35,15 +35,41 @@ func Build(records []Record) (*Node, error) {
 }
 
 func checkErrors(records []Record) error {
+	hasRoot := false
+	duplicates := map[int]int{}
+
 	for _, record := range records {
+
+		if record.Parent >= record.ID && record.ID != 0 {
+			return errors.New("higher id parent of lower id")
+		}
+
+		if _, ok := duplicates[record.ID]; ok {
+			return errors.New("duplicate found")
+		}
+
+		duplicates[record.ID]++
+
+		if record.ID == 0 {
+			hasRoot = true
+		}
 
 		if record.ID == 0 && record.Parent != 0 {
 			return errors.New("root node has parent")
 		}
-		//if record.ID == 0 && record.Parent != 0 {
-		//	return errors.New("no root node")
-		//}
+
 	}
+
+	if !hasRoot {
+		return errors.New("no root node")
+	}
+
+	for i := 0; i < len(records); i++ {
+		if _, ok := duplicates[i]; !ok {
+			return errors.New("non-continuous")
+		}
+	}
+
 	return nil
 }
 
