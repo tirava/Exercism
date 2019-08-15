@@ -4,6 +4,7 @@ package phonenumber
 
 import (
 	"errors"
+	"regexp"
 	"unicode"
 )
 
@@ -17,38 +18,35 @@ func Number(n string) (string, error) {
 		}
 	}
 
-	//re, err := regexp.Compile(`^2$`)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	////println(nums)
-	//
-	//if !re.MatchString(n) {
+	re := regexp.MustCompile(`^1\d{10}$|^2\d{9}$`)
+
+	//println(nums)
+
+	if !re.MatchString(nums) {
+		return "", errors.New("not phone number")
+	}
+
+	//if len(nums) < 10 || len(nums) > 11 {
 	//	return "", errors.New("not phone number")
 	//}
-
-	if len(nums) < 10 || len(nums) > 11 {
-		return "", errors.New("not phone number")
-	}
-
-	if len(nums) == 11 && nums[0] != '1' {
-		return "", errors.New("not phone number")
-	}
-
-	if len(nums) == 10 && nums[0] != '2' {
-		return "", errors.New("not phone number")
-	}
-
-	if len(nums) == 10 && nums[3] == '0' {
-		return "", errors.New("not phone number")
-	}
-
-	if len(nums) == 10 && nums[3] == '1' {
-		return "", errors.New("not phone number")
-	}
-
-	if len(nums) == 11 && nums[0] == '1' {
+	//
+	//if len(nums) == 11 && nums[0] != '1' {
+	//	return "", errors.New("not phone number")
+	//}
+	//
+	//if len(nums) == 10 && nums[0] != '2' {
+	//	return "", errors.New("not phone number")
+	//}
+	//
+	//if len(nums) == 10 && nums[3] == '0' {
+	//	return "", errors.New("not phone number")
+	//}
+	//
+	//if len(nums) == 10 && nums[3] == '1' {
+	//	return "", errors.New("not phone number")
+	//}
+	//
+	if len(nums) == 11 {
 		return nums[1:], nil
 	}
 
