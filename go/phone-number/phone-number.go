@@ -18,36 +18,14 @@ func Number(n string) (string, error) {
 		}
 	}
 
-	re := regexp.MustCompile(`^1[2-9]\d{2}[2-9]\d{6}$|^2\d{2}[2-9]\d{6}$`)
+	if len(nums) == 11 && nums[0] == '1' {
+		nums = nums[1:]
+	}
 
-	//println(nums)
+	re := regexp.MustCompile(`^2\d{2}[2-9]\d{6}$`)
 
 	if !re.MatchString(nums) {
 		return "", errors.New("not phone number")
-	}
-
-	//if len(nums) < 10 || len(nums) > 11 {
-	//	return "", errors.New("not phone number")
-	//}
-	//
-	//if len(nums) == 11 && nums[0] != '1' {
-	//	return "", errors.New("not phone number")
-	//}
-	//
-	//if len(nums) == 10 && nums[0] != '2' {
-	//	return "", errors.New("not phone number")
-	//}
-	//
-	//if len(nums) == 10 && nums[3] == '0' {
-	//	return "", errors.New("not phone number")
-	//}
-	//
-	//if len(nums) == 10 && nums[3] == '1' {
-	//	return "", errors.New("not phone number")
-	//}
-	//
-	if len(nums) == 11 {
-		return nums[1:], nil
 	}
 
 	return nums, nil
@@ -61,6 +39,9 @@ func Format(n string) (string, error) {
 
 // Number returns clean numbers.
 func AreaCode(n string) (string, error) {
-
-	return "", nil
+	s, err := Number(n)
+	if err != nil {
+		return "", err
+	}
+	return s[:3], nil
 }
