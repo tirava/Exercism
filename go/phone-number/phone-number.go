@@ -29,7 +29,7 @@ func Number(n string) (string, error) {
 	return nums, nil
 }
 
-// Number returns formatted number.
+// Format returns formatted number.
 func Format(n string) (string, error) {
 	s, err := Number(n)
 	if err != nil {
@@ -38,7 +38,7 @@ func Format(n string) (string, error) {
 	return "(" + s[:3] + ") " + s[3:6] + "-" + s[6:], nil
 }
 
-// Number returns clean numbers.
+// AreaCode returns clean numbers.
 func AreaCode(n string) (string, error) {
 	s, err := Number(n)
 	if err != nil {
