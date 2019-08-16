@@ -17,13 +17,11 @@ func Number(n string) (string, error) {
 			nums += string(s)
 		}
 	}
-
 	if len(nums) == 11 && nums[0] == '1' {
 		nums = nums[1:]
 	}
 
 	re := regexp.MustCompile(`^2\d{2}[2-9]\d{6}$`)
-
 	if !re.MatchString(nums) {
 		return "", errors.New("not phone number")
 	}
@@ -33,8 +31,11 @@ func Number(n string) (string, error) {
 
 // Number returns formatted number.
 func Format(n string) (string, error) {
-
-	return "", nil
+	s, err := Number(n)
+	if err != nil {
+		return "", err
+	}
+	return "(" + s[:3] + ") " + s[3:6] + "-" + s[6:], nil
 }
 
 // Number returns clean numbers.
