@@ -13,27 +13,6 @@ var testCases = []struct {
 	weekday time.Weekday
 	expDay  int
 }{
-	{2013, 5, Teenth, time.Monday, 13},    // monteenth of May 2013
-	{2013, 8, Teenth, time.Monday, 19},    // monteenth of August 2013
-	{2013, 9, Teenth, time.Monday, 16},    // monteenth of September 2013
-	{2013, 3, Teenth, time.Tuesday, 19},   // tuesteenth of March 2013
-	{2013, 4, Teenth, time.Tuesday, 16},   // tuesteenth of April 2013
-	{2013, 8, Teenth, time.Tuesday, 13},   // tuesteenth of August 2013
-	{2013, 1, Teenth, time.Wednesday, 16}, // wednesteenth of January 2013
-	{2013, 2, Teenth, time.Wednesday, 13}, // wednesteenth of February 2013
-	{2013, 6, Teenth, time.Wednesday, 19}, // wednesteenth of June 2013
-	{2013, 5, Teenth, time.Thursday, 16},  // thursteenth of May 2013
-	{2013, 6, Teenth, time.Thursday, 13},  // thursteenth of June 2013
-	{2013, 9, Teenth, time.Thursday, 19},  // thursteenth of September 2013
-	{2013, 4, Teenth, time.Friday, 19},    // friteenth of April 2013
-	{2013, 8, Teenth, time.Friday, 16},    // friteenth of August 2013
-	{2013, 9, Teenth, time.Friday, 13},    // friteenth of September 2013
-	{2013, 2, Teenth, time.Saturday, 16},  // saturteenth of February 2013
-	{2013, 4, Teenth, time.Saturday, 13},  // saturteenth of April 2013
-	{2013, 10, Teenth, time.Saturday, 19}, // saturteenth of October 2013
-	{2013, 5, Teenth, time.Sunday, 19},    // sunteenth of May 2013
-	{2013, 6, Teenth, time.Sunday, 16},    // sunteenth of June 2013
-	{2013, 10, Teenth, time.Sunday, 13},   // sunteenth of October 2013
 	{2013, 3, First, time.Monday, 4},      // first Monday of March 2013
 	{2013, 4, First, time.Monday, 1},      // first Monday of April 2013
 	{2013, 5, First, time.Tuesday, 7},     // first Tuesday of May 2013
@@ -108,4 +87,25 @@ var testCases = []struct {
 	{2014, 12, Last, time.Wednesday, 31},  // last Wednesday of December 2014
 	{2015, 2, Last, time.Sunday, 22},      // last Sunday of February 2015
 	{2012, 12, First, time.Friday, 7},     // first Friday of December 2012
+	{2013, 5, Teenth, time.Monday, 13},    // monteenth of May 2013
+	{2013, 8, Teenth, time.Monday, 19},    // monteenth of August 2013
+	{2013, 9, Teenth, time.Monday, 16},    // monteenth of September 2013
+	{2013, 3, Teenth, time.Tuesday, 19},   // tuesteenth of March 2013
+	{2013, 4, Teenth, time.Tuesday, 16},   // tuesteenth of April 2013
+	{2013, 8, Teenth, time.Tuesday, 13},   // tuesteenth of August 2013
+	{2013, 1, Teenth, time.Wednesday, 16}, // wednesteenth of January 2013
+	{2013, 2, Teenth, time.Wednesday, 13}, // wednesteenth of February 2013
+	{2013, 6, Teenth, time.Wednesday, 19}, // wednesteenth of June 2013
+	{2013, 5, Teenth, time.Thursday, 16},  // thursteenth of May 2013
+	{2013, 6, Teenth, time.Thursday, 13},  // thursteenth of June 2013
+	{2013, 9, Teenth, time.Thursday, 19},  // thursteenth of September 2013
+	{2013, 4, Teenth, time.Friday, 19},    // friteenth of April 2013
+	{2013, 8, Teenth, time.Friday, 16},    // friteenth of August 2013
+	{2013, 9, Teenth, time.Friday, 13},    // friteenth of September 2013
+	{2013, 2, Teenth, time.Saturday, 16},  // saturteenth of February 2013
+	{2013, 4, Teenth, time.Saturday, 13},  // saturteenth of April 2013
+	{2013, 10, Teenth, time.Saturday, 19}, // saturteenth of October 2013
+	{2013, 5, Teenth, time.Sunday, 19},    // sunteenth of May 2013
+	{2013, 6, Teenth, time.Sunday, 16},    // sunteenth of June 2013
+	{2013, 10, Teenth, time.Sunday, 13},   // sunteenth of October 2013
 }
