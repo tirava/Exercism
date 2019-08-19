@@ -6,7 +6,7 @@ import "unicode"
 // RotationalCipher returns ROT for rot rotations.
 func RotationalCipher(in string, rot int) string {
 
-	rot %= 26
+	rotr := rune(rot % 26)
 	outR := make([]rune, len(in))
 
 	for i, s := range in {
@@ -21,10 +21,10 @@ func RotationalCipher(in string, rot int) string {
 		}
 
 		out := rune(0)
-		if s+rune(rot) > lastLetter {
+		if s+rotr > lastLetter {
 			out = 26
 		}
-		outR[i] = s + rune(rot) - out
+		outR[i] = s + rotr - out
 
 	}
 
