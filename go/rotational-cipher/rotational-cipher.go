@@ -1,17 +1,21 @@
 // Package rotationalcipher implements ROTxx, also sometimes called the Caesar cipher.
 package rotationalcipher
 
-import "unicode"
+import (
+	"strings"
+	"unicode"
+)
 
 // RotationalCipher returns ROT for rot rotations.
 func RotationalCipher(in string, rot int) string {
 
 	rotr := rune(rot % 26)
-	outR := make([]rune, len(in))
+	var outR strings.Builder
+	outR.Grow(len(in))
 
-	for i, s := range in {
+	for _, s := range in {
 		if !unicode.IsLetter(s) || unicode.IsSpace(s) {
-			outR[i] = s
+			outR.WriteRune(s)
 			continue
 		}
 
@@ -24,9 +28,8 @@ func RotationalCipher(in string, rot int) string {
 		if s+rotr > lastLetter {
 			out = 26
 		}
-		outR[i] = s + rotr - out
+		outR.WriteRune(s + rotr - out)
 
 	}
-
-	return string(outR)
+	return outR.String()
 }
