@@ -9,27 +9,32 @@ import (
 // RotationalCipher returns ROT for rot rotations.
 func RotationalCipher(in string, rot int) string {
 
-	rotr := rune(rot % 26)
-	var outR strings.Builder
+	var (
+		outR strings.Builder
+		resR rune
+		rotr = rune(rot % 26)
+	)
+
 	outR.Grow(len(in))
 
 	for _, s := range in {
-		if !unicode.IsLetter(s) || unicode.IsSpace(s) {
-			outR.WriteRune(s)
-			continue
+		if unicode.IsLetter(s) {
+			lastLetter := 'z'
+			if unicode.IsUpper(s) {
+				lastLetter = 'Z'
+			}
+
+			var out rune = 0
+			if s+rotr > lastLetter {
+				out = 26
+			}
+			resR = s + rotr - out
+		} else {
+			resR = s
 		}
 
-		lastLetter := 'z'
-		if unicode.IsUpper(s) {
-			lastLetter = 'Z'
-		}
-
-		out := rune(0)
-		if s+rotr > lastLetter {
-			out = 26
-		}
-		outR.WriteRune(s + rotr - out)
-
+		outR.WriteRune(resR)
 	}
+
 	return outR.String()
 }
