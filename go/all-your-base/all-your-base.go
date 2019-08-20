@@ -17,42 +17,23 @@ func ConvertToBase(inBase int, inDigits []int, outBase int) (out []int, err erro
 		return nil, errors.New("output base must be >= 2")
 	}
 
-	l := len(inDigits) - 1
 	res := 0
 
-	for i, d := range inDigits {
+	for _, d := range inDigits {
 		if d < 0 || d >= inBase {
 			return nil, errors.New("all digits must satisfy 0 <= d < input base")
 		}
-		res += d * intPow(inBase, l-i)
+		res = d + res*inBase
 	}
 
 	for i := 0; ; i++ {
 		rem := res % outBase
-		out = append(out, rem)
+		out = append([]int{rem}, out...)
 		res = res / outBase
 		if res == 0 {
 			break
 		}
 	}
 
-	l = len(out)
-	if l > 1 {
-		for i := 0; i < l/2; i++ {
-			out[i], out[l-i-1] = out[l-i-1], out[i]
-		}
-	}
-
 	return
-}
-
-func intPow(x, y int) int {
-	res := x
-	if y == 0 {
-		return 1
-	}
-	for ; y > 1; y-- {
-		res *= x
-	}
-	return res
 }
