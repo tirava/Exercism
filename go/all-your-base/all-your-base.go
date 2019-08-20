@@ -27,9 +27,8 @@ func ConvertToBase(inBase int, inDigits []int, outBase int) (out []int, err erro
 	}
 
 	for i := 0; ; i++ {
-		rem := res % outBase
-		out = append([]int{rem}, out...)
-		res = res / outBase
+		out = append([]int{res % outBase}, out...)
+		res /= outBase
 		if res == 0 {
 			break
 		}
