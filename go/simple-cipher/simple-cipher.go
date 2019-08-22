@@ -25,6 +25,7 @@ func (c *Caesar) Encode(in string) string {
 
 	var s1 rune
 	var j int
+
 	for _, s := range in {
 		if !unicode.IsLetter(s) {
 			continue
@@ -76,7 +77,7 @@ func NewVigenere(key string) Cipher {
 	}
 	a := 0
 	for _, s := range key {
-		if !unicode.IsLetter(s) || unicode.IsUpper(s) {
+		if s < 'a' || 'z' < s {
 			return nil
 		}
 		if s == 'a' {
