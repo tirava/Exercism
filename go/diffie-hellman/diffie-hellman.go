@@ -21,19 +21,22 @@ func PrivateKey(p *big.Int) (ab *big.Int) {
 }
 
 // PublicKey returns public keys.
-func PublicKey(ab, p *big.Int, g int64) (AB *big.Int) {
-
-	return
+func PublicKey(ab, p *big.Int, g int64) *big.Int {
+	return ab.Exp(big.NewInt(g), ab, p)
 }
 
 // SecretKey returns secret key.
-func SecretKey(ab, AB, p *big.Int) (s *big.Int) {
-
-	return
+func SecretKey(ab, BA, p *big.Int) *big.Int {
+	//s = B**a mod p
+	//s = A**b mod p
+	AB := big.NewInt(0)
+	AB.Exp(BA, ab, p)
+	return AB
 }
 
 // NewPair returns new pairs.
 func NewPair(p *big.Int, g int64) (ab, AB *big.Int) {
-
+	ab = PrivateKey(p)
+	AB = PublicKey(ab, p, g)
 	return
 }

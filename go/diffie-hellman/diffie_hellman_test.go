@@ -10,7 +10,6 @@
 package diffiehellman
 
 import (
-	"fmt"
 	"math/big"
 	"testing"
 )
@@ -82,7 +81,6 @@ var _one = big.NewInt(1)
 // test that PrivateKey returns numbers in range, returns different numbers.
 func TestPrivateKey(t *testing.T) {
 	priv := func(p *big.Int) *big.Int {
-		fmt.Println(p)
 		a := PrivateKey(p)
 		if a.Cmp(_one) <= 0 || a.Cmp(p) >= 0 {
 			t.Fatalf("PrivateKey(%s) = %s, out of range (1, %s)", p.String(), a.String(), p.String())
