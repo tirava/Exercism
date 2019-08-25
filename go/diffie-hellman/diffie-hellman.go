@@ -2,36 +2,39 @@
 package diffiehellman
 
 import (
-	"crypto/rand"
 	"math/big"
+	"math/rand"
+	"time"
 )
 
-var _1 = big.NewInt(1)
-var _23 = big.NewInt(23)
+var (
+	rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
+	_0  = big.NewInt(0)
+	_1  = big.NewInt(1)
+)
 
 // PrivateKey returns picked private key.
-func PrivateKey(p *big.Int) (ab *big.Int) {
+func PrivateKey(p *big.Int) *big.Int {
+	ab := _0
 	for {
-		ab, _ = rand.Int(rand.Reader, p)
+		ab.Rand(rnd, p)
 		if ab.Cmp(_1) > 0 {
 			break
 		}
 	}
-	return
+	return ab
 }
 
 // PublicKey returns public keys.
 func PublicKey(ab, p *big.Int, g int64) *big.Int {
-	return ab.Exp(big.NewInt(g), ab, p)
+	AB := _0
+	return AB.Exp(big.NewInt(g), ab, p)
 }
 
 // SecretKey returns secret key.
 func SecretKey(ab, BA, p *big.Int) *big.Int {
-	//s = B**a mod p
-	//s = A**b mod p
-	AB := big.NewInt(0)
-	AB.Exp(BA, ab, p)
-	return AB
+	AB := _0
+	return AB.Exp(BA, ab, p)
 }
 
 // NewPair returns new pairs.
