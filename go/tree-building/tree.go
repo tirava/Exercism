@@ -31,7 +31,6 @@ func Build(records []Record) (*Node, error) {
 	})
 
 	nodes := make([]Node, rlen)
-	duplicates := make(map[int]int, rlen)
 
 	for i, record := range records {
 
@@ -47,10 +46,9 @@ func Build(records []Record) (*Node, error) {
 		if record.ID <= record.Parent {
 			return nil, errors.New("higher id parent of lower id")
 		}
-		if _, ok := duplicates[record.ID]; ok {
+		if i != record.ID {
 			return nil, errors.New("duplicate found")
 		}
-		duplicates[record.ID]++
 
 		nodes[i] = Node{ID: record.ID}
 		nodes[record.Parent].Children = append(nodes[record.Parent].Children, &nodes[i])
