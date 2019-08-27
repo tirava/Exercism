@@ -20,23 +20,14 @@ type Record struct {
 // Build builds the tree.
 func Build(records []Record) (*Node, error) {
 
-	rlen := len(records)
-
-	if rlen == 0 {
-		return nil, nil
-	}
-
 	sort.Slice(records, func(i, j int) bool {
 		return records[i].ID < records[j].ID
 	})
 
-	nodes := make([]Node, rlen)
+	nodes := make(map[int]*Node, len(records))
 
 	for i, record := range records {
 
-		if record.ID >= rlen {
-			return nil, fmt.Errorf("non-continuous (%d)", record.ID)
-		}
 		if i == 0 && record.Parent != 0 {
 			return nil, fmt.Errorf("root node should not have a parent (%d)", record.Parent)
 		}
@@ -47,11 +38,11 @@ func Build(records []Record) (*Node, error) {
 			return nil, fmt.Errorf("duplicate found (%d)", record.ID)
 		}
 
-		nodes[i] = Node{ID: record.ID}
+		nodes[i] = &Node{ID: record.ID}
 		if i != 0 {
-			nodes[record.Parent].Children = append(nodes[record.Parent].Children, &nodes[i])
+			nodes[record.Parent].Children = append(nodes[record.Parent].Children, nodes[i])
 		}
 	}
 
-	return &nodes[0], nil
+	return nodes[0], nil
 }
