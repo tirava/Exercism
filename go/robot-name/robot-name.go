@@ -18,7 +18,11 @@ type Robot struct {
 
 var robots = make(map[string]*Robot)
 
-const maxNumNames = 676000 // 26 * 26 * 10 * 10 * 10
+const (
+	maxNumNames = 26 * 26 * 10 * 10 * 10 // 676000
+	letters     = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	digits      = "0123456789"
+)
 
 // Name returns robot name.
 func (r *Robot) Name() (string, error) {
@@ -32,15 +36,19 @@ func (r *Robot) Name() (string, error) {
 		return r.name, nil
 	}
 
+	b := make([]byte, 5)
+
 	for {
 
-		r1 := rune(rand.Intn('Z'-'A'+1)) + 'A'
-		r2 := rune(rand.Intn('Z'-'A'+1)) + 'A'
-		r3 := rune(rand.Intn('9'-'0'+1)) + '0'
-		r4 := rune(rand.Intn('9'-'0'+1)) + '0'
-		r5 := rune(rand.Intn('9'-'0'+1)) + '0'
+		for i := range b {
+			if i < 2 {
+				b[i] = letters[rand.Int63()%int64(len(letters))] // Int63 much faster Intn
+				continue
+			}
+			b[i] = digits[rand.Int63()%int64(len(digits))]
+		}
 
-		r.name = string(r1) + string(r2) + string(r3) + string(r4) + string(r5)
+		r.name = string(b)
 
 		if _, ok := robots[r.name]; !ok {
 			break
@@ -48,14 +56,11 @@ func (r *Robot) Name() (string, error) {
 
 		// uncomment for benchmark
 		//if len(robots) >= maxNumNames {
-		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
-		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
-		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
-		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
-		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
+		//	for i := 0; i < 6; i++ { // increase if error "reissued" occurred
+		//		r.name += string(digits[rand.Int63()%int64(len(digits))])
+		//	}
 		//	break
 		//}
-
 	}
 
 	robots[r.name] = r
