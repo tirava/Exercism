@@ -16,10 +16,17 @@ type Robot struct {
 	name string
 }
 
-var robots = make(map[string]*Robot, 0)
+var robots = make(map[string]*Robot)
+
+const maxNumNames = 676000 // 26 * 26 * 10 * 10 * 10
 
 // Name returns robot name.
 func (r *Robot) Name() (string, error) {
+
+	// comment for benchmark
+	if len(robots) >= maxNumNames {
+		return "", fmt.Errorf("no names for new robots: %d names already", len(robots))
+	}
 
 	if ok := robots[r.name]; ok != nil {
 		return r.name, nil
@@ -38,21 +45,27 @@ func (r *Robot) Name() (string, error) {
 		if _, ok := robots[r.name]; !ok {
 			break
 		}
-		//println("Collision:", r.name)
-		//r.Reset()
-		if len(robots) >= 676000 { //26*26*10*10*10 {
-			return "", fmt.Errorf("end robots names: %d", len(robots))
-		}
+
+		// uncomment for benchmark
+		//if len(robots) >= maxNumNames {
+		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
+		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
+		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
+		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
+		//	r.name += string(rune(rand.Intn('9'-'0'+1)) + '0')
+		//	break
+		//}
+
 	}
 
 	robots[r.name] = r
-	//fmt.Println(r.name)
 
 	return r.name, nil
 }
 
 // Reset resets robot name.
 func (r *Robot) Reset() {
-	//delete(robots, r.name)
-	robots[r.name] = nil
+	if r.name != "" {
+		robots[r.name] = nil
+	}
 }
