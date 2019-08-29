@@ -34,7 +34,7 @@ func Products(fmin, fmax int) (pmin, pmax Product, err error) {
 		}
 	}
 
-	min, max := math.MaxInt32, 0
+	min, max := math.MaxInt32, -math.MaxInt32
 	for i, v := range products {
 		if v.p {
 			if min > i {
@@ -46,7 +46,7 @@ func Products(fmin, fmax int) (pmin, pmax Product, err error) {
 		}
 	}
 
-	if max == 0 {
+	if max == -math.MaxInt32 {
 		return Product{}, Product{}, errors.New("no palindromes")
 	}
 
@@ -69,8 +69,5 @@ func isPalindrom(s string) bool {
 		r[i], r[j] = r[j], r[i]
 	}
 
-	if s == string(r) {
-		return true
-	}
-	return false
+	return s == string(r)
 }
