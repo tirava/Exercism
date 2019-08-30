@@ -28,7 +28,7 @@ func Classify(n int64) (Classification, error) {
 
 	for i := n / 2; i > 1; i-- {
 		if n%i == 0 {
-			sum += n / i
+			sum += i
 		}
 	}
 	sum++
