@@ -1,11 +1,14 @@
 // Package perfect implements determining if a number is perfect, abundant, or deficient.
 package perfect
 
-import "errors"
+import (
+	"errors"
+)
 
-// Classification is the base type for numbers
+// Classification is the base type for numbers.
 type Classification string
 
+// Classification constants.
 const (
 	ClassificationPerfect   = "Perfect"
 	ClassificationDeficient = "Deficient"
@@ -21,5 +24,21 @@ func Classify(n int64) (Classification, error) {
 		return "", ErrOnlyPositive
 	}
 
-	return ClassificationPerfect, nil
+	var sum int64
+
+	for i := n / 2; i > 1; i-- {
+		if n%i == 0 {
+			sum += n / i
+		}
+	}
+	sum++
+
+	switch {
+	case sum-n > 0:
+		return ClassificationAbundant, nil
+	case sum-n == 0 && n != 1:
+		return ClassificationPerfect, nil
+	default:
+		return ClassificationDeficient, nil
+	}
 }
