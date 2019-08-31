@@ -18,11 +18,7 @@ type Robot struct {
 
 var robots = make(map[string]*Robot)
 
-const (
-	maxNumNames = 26 * 26 * 10 * 10 * 10 // 676000
-	letters     = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	digits      = "0123456789"
-)
+const maxNumNames = 26 * 26 * 10 * 10 * 10 // 676000
 
 // Name returns robot name.
 func (r *Robot) Name() (string, error) {
@@ -36,19 +32,12 @@ func (r *Robot) Name() (string, error) {
 		return r.name, nil
 	}
 
-	b := make([]byte, 5)
-
 	for {
 
-		for i := range b {
-			if i < 2 {
-				b[i] = letters[rand.Int63()%int64(len(letters))] // Int63 much faster Intn
-				continue
-			}
-			b[i] = digits[rand.Int63()%int64(len(digits))]
-		}
-
-		r.name = string(b)
+		r1 := string(rand.Intn(26) + 'A')
+		r2 := string(rand.Intn(26) + 'A')
+		num := rand.Intn(1000)
+		r.name = fmt.Sprintf("%s%s%03d", r1, r2, num)
 
 		if _, ok := robots[r.name]; !ok {
 			break
@@ -56,9 +45,8 @@ func (r *Robot) Name() (string, error) {
 
 		// uncomment for benchmark
 		//if len(robots) >= maxNumNames {
-		//	for i := 0; i < 6; i++ { // increase if error "reissued" occurred
-		//		r.name += string(digits[rand.Int63()%int64(len(digits))])
-		//	}
+		//	num := rand.Intn(1000000) // increase x10 and %0xd below if error "reissued" occurred
+		//	r.name += fmt.Sprintf("%06d", num)
 		//	break
 		//}
 	}
