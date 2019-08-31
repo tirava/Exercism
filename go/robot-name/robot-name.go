@@ -16,7 +16,7 @@ type Robot struct {
 	name string
 }
 
-var robots = make(map[string]*Robot)
+var robots = make(map[string]bool)
 
 const maxNumNames = 26 * 26 * 10 * 10 * 10 // 676000
 
@@ -28,17 +28,12 @@ func (r *Robot) Name() (string, error) {
 		return "", fmt.Errorf("no names for new robots: %d names already", len(robots))
 	}
 
-	if ok := robots[r.name]; ok != nil {
+	if ok := robots[r.name]; ok {
 		return r.name, nil
 	}
 
 	for {
-
-		r1 := string(rand.Intn(26) + 'A')
-		r2 := string(rand.Intn(26) + 'A')
-		num := rand.Intn(1000)
-		r.name = fmt.Sprintf("%s%s%03d", r1, r2, num)
-
+		r.name = r.newName()
 		if _, ok := robots[r.name]; !ok {
 			break
 		}
@@ -51,14 +46,21 @@ func (r *Robot) Name() (string, error) {
 		//}
 	}
 
-	robots[r.name] = r
+	robots[r.name] = true
 
 	return r.name, nil
+}
+
+func (r *Robot) newName() string {
+	r1 := string(rand.Intn(26) + 'A')
+	r2 := string(rand.Intn(26) + 'A')
+	num := rand.Intn(1000)
+	return fmt.Sprintf("%s%s%03d", r1, r2, num)
 }
 
 // Reset resets robot name.
 func (r *Robot) Reset() {
 	if r.name != "" {
-		robots[r.name] = nil
+		robots[r.name] = false
 	}
 }
