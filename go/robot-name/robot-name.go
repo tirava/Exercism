@@ -28,15 +28,13 @@ func (r *Robot) Name() (string, error) {
 		return "", fmt.Errorf("no names for new robots: %d names already", len(robots))
 	}
 
-	if ok := robots[r.name]; ok {
+	if robots[r.name] {
 		return r.name, nil
 	}
 
-	for {
+	for ok := true; ok; {
 		r.name = r.newName()
-		if _, ok := robots[r.name]; !ok {
-			break
-		}
+		_, ok = robots[r.name]
 
 		// uncomment for benchmark
 		//if len(robots) >= maxNumNames {
