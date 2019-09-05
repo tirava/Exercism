@@ -3,18 +3,26 @@ package tournament
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 )
 
 const (
-	win = iota
-	draw
-	loss
-	command1 = 0
-	command2 = 1
+	//win = iota
+	//draw
+	//loss
+	command1 = iota
+	command2
+	played
 )
+
+type score struct {
+	win, draw, loss int
+}
+
+type result map[string]*score
 
 // Tally fills tournament table.
 func Tally(r io.Reader, w io.Writer) (err error) {
@@ -26,8 +34,8 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 	//}
 	s := buf.String()
 
-	//results := map[string][3]int{} // [3]int{won, drawn, lost}
-	results := make(map[string][3]int) // [3]int{won, drawn, lost}
+	//results := map[string][3]int{}
+	results := make(result)
 	formatHeader := "%-31s|%4s|%4s|%4s|%4s|%4s\n"
 	formatBody := "%-31s|%4s|%3d |%3d |%3d |%4s\n"
 
@@ -39,29 +47,34 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 			continue
 		}
 		result := strings.Split(line, ";")
+		if len(result) != 3 {
+			return errors.New("incorrect commands")
+		}
 
-		switch result[2] { // win, draw, loss
+		if _, ok := results[result[command1]]; !ok {
+			results[result[command1]] = &score{}
+		}
+		if _, ok := results[result[command2]]; !ok {
+			results[result[command2]] = &score{}
+		}
+
+		switch result[played] {
 		case "win":
-			c1 := results[result[command1]]
-			c1[win]++
-			results[result[command1]] = c1
-		//	results[result[command1]][win]++
-		//case "draw":
-		//	results[result[command1]][draw]++
-		//	results[result[command2]][draw]++
-		//case "loss":
-		//	results[result[command2]][loss]++
+			results[result[command1]].win++
+			results[result[command2]].loss++
+		case "draw":
+			results[result[command1]].draw++
+			results[result[command2]].draw++
+		case "loss":
+			results[result[command1]].loss++
+			results[result[command2]].win++
 		default:
-			//x := results["www"]
-			//x[0]++
-			//results["www"] = x
-			//fmt.Println(results)
+			return errors.New("incorrect result")
 		}
+	}
 
-		for k, v := range results {
-			_, _ = fmt.Fprintf(w, formatBody, k, "MP ", v[win], v[draw], v[loss], "P ")
-		}
-
+	for k, v := range results {
+		_, _ = fmt.Fprintf(w, formatBody, k, "MP ", v.win, v.draw, v.loss, "P ")
 	}
 
 	return
