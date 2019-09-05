@@ -23,11 +23,11 @@ type score struct {
 type result map[string]*score
 
 type resultPair struct {
-	key   string
-	value int
+	command string
+	points  int
 }
 
-type pairList []resultPair
+type byPoints []resultPair
 
 // Tally fills tournament table.
 func Tally(r io.Reader, w io.Writer) (err error) {
@@ -39,7 +39,6 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 	//}
 	s := buf.String()
 
-	//results := map[string][3]int{}
 	results := make(result)
 	formatHeader := "%-31s|%4s|%4s|%4s|%4s|%3s\n"
 	formatBody := "%-31s|%3d |%3d |%3d |%3d |%3d\n"
@@ -48,7 +47,7 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 	_, _ = fmt.Fprintf(w, formatHeader, "Team", "MP ", "W ", "D ", "L ", "P")
 
 	for _, line := range lines {
-		if len(line) <= 1 {
+		if len(line) <= 1 || line[0] == '#' {
 			continue
 		}
 		result := strings.Split(line, ";")
@@ -78,23 +77,32 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 		}
 	}
 
-	pl := make(pairList, len(results))
+	pl := make(byPoints, len(results))
 	i := 0
 	for k, v := range results {
 		pl[i] = resultPair{k, v.win*3 + v.draw}
 		i++
 	}
+	//sort.Sort(pl)
 	sort.Sort(sort.Reverse(pl))
 
 	for _, v := range pl {
-		_, _ = fmt.Fprintf(w, formatBody, v.key,
-			results[v.key].win+results[v.key].draw+results[v.key].loss,
-			results[v.key].win, results[v.key].draw, results[v.key].loss, v.value)
+		_, _ = fmt.Fprintf(w, formatBody, v.command,
+			results[v.command].win+results[v.command].draw+results[v.command].loss,
+			results[v.command].win, results[v.command].draw, results[v.command].loss, v.points)
 	}
 
 	return
 }
 
-func (p pairList) Len() int           { return len(p) }
-func (p pairList) Less(i, j int) bool { return p[i].value < p[j].value }
-func (p pairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p byPoints) Len() int { return len(p) }
+
+func (p byPoints) Less(i, j int) bool {
+	if p[i].points == p[j].points {
+		return p[i].command > p[j].command
+	} else {
+		return p[i].points < p[j].points
+	}
+}
+
+func (p byPoints) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
