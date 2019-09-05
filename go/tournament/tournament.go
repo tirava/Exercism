@@ -6,13 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 )
 
 const (
-	//win = iota
-	//draw
-	//loss
 	command1 = iota
 	command2
 	played
@@ -23,6 +21,13 @@ type score struct {
 }
 
 type result map[string]*score
+
+type resultPair struct {
+	key   string
+	value int
+}
+
+type pairList []resultPair
 
 // Tally fills tournament table.
 func Tally(r io.Reader, w io.Writer) (err error) {
@@ -73,9 +78,23 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 		}
 	}
 
+	pl := make(pairList, len(results))
+	i := 0
 	for k, v := range results {
-		_, _ = fmt.Fprintf(w, formatBody, k, v.win+v.draw+v.loss, v.win, v.draw, v.loss, v.win*3+v.draw)
+		pl[i] = resultPair{k, v.win*3 + v.draw}
+		i++
+	}
+	sort.Sort(sort.Reverse(pl))
+
+	for _, v := range pl {
+		_, _ = fmt.Fprintf(w, formatBody, v.key,
+			results[v.key].win+results[v.key].draw+results[v.key].loss,
+			results[v.key].win, results[v.key].draw, results[v.key].loss, v.value)
 	}
 
 	return
 }
+
+func (p pairList) Len() int           { return len(p) }
+func (p pairList) Less(i, j int) bool { return p[i].value < p[j].value }
+func (p pairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
