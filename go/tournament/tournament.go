@@ -36,11 +36,11 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 
 	//results := map[string][3]int{}
 	results := make(result)
-	formatHeader := "%-31s|%4s|%4s|%4s|%4s|%4s\n"
-	formatBody := "%-31s|%4s|%3d |%3d |%3d |%4s\n"
+	formatHeader := "%-31s|%4s|%4s|%4s|%4s|%3s\n"
+	formatBody := "%-31s|%3d |%3d |%3d |%3d |%3d\n"
 
 	lines := strings.Split(s, "\n")
-	_, _ = fmt.Fprintf(w, formatHeader, "Team", "MP ", "W ", "D ", "L ", "P ")
+	_, _ = fmt.Fprintf(w, formatHeader, "Team", "MP ", "W ", "D ", "L ", "P")
 
 	for _, line := range lines {
 		if len(line) <= 1 {
@@ -74,7 +74,7 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 	}
 
 	for k, v := range results {
-		_, _ = fmt.Fprintf(w, formatBody, k, "MP ", v.win, v.draw, v.loss, "P ")
+		_, _ = fmt.Fprintf(w, formatBody, k, v.win+v.draw+v.loss, v.win, v.draw, v.loss, v.win*3+v.draw)
 	}
 
 	return
