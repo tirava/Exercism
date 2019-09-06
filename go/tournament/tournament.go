@@ -77,15 +77,20 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 		}
 	}
 
-	pl := make(byPoints, len(results))
+	bp := make(byPoints, len(results))
 	i := 0
 	for k, v := range results {
-		pl[i] = resultPair{k, v.win*3 + v.draw}
+		bp[i] = resultPair{k, v.win*3 + v.draw}
 		i++
 	}
-	sort.Sort(sort.Reverse(pl))
+	sort.Slice(bp, func(i, j int) bool {
+		if bp[i].points == bp[j].points {
+			return bp[i].player < bp[j].player
+		}
+		return bp[i].points > bp[j].points
+	})
 
-	for _, v := range pl {
+	for _, v := range bp {
 		fmt.Fprintf(w, formatBody, v.player,
 			results[v.player].win+results[v.player].draw+results[v.player].loss,
 			results[v.player].win, results[v.player].draw, results[v.player].loss, v.points)
@@ -93,14 +98,3 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 
 	return
 }
-
-func (p byPoints) Len() int { return len(p) }
-
-func (p byPoints) Less(i, j int) bool {
-	if p[i].points == p[j].points {
-		return p[i].player > p[j].player
-	}
-	return p[i].points < p[j].points
-}
-
-func (p byPoints) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
