@@ -20,7 +20,7 @@ type score struct {
 	win, draw, loss int
 }
 
-type result map[string]*score
+type result map[string]score
 
 type resultPair struct {
 	player string
@@ -49,26 +49,25 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 			return errors.New("incorrect commands")
 		}
 
-		if _, ok := results[result[player1]]; !ok {
-			results[result[player1]] = &score{}
-		}
-		if _, ok := results[result[player2]]; !ok {
-			results[result[player2]] = &score{}
-		}
+		p1 := results[result[player1]]
+		p2 := results[result[player2]]
 
 		switch result[played] {
 		case "win":
-			results[result[player1]].win++
-			results[result[player2]].loss++
+			p1.win++
+			p2.loss++
 		case "draw":
-			results[result[player1]].draw++
-			results[result[player2]].draw++
+			p1.draw++
+			p2.draw++
 		case "loss":
-			results[result[player1]].loss++
-			results[result[player2]].win++
+			p1.loss++
+			p2.win++
 		default:
 			return errors.New("incorrect result")
 		}
+
+		results[result[player1]] = p1
+		results[result[player2]] = p2
 	}
 
 	bp := make(byPoints, len(results))
