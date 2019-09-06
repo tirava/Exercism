@@ -2,7 +2,7 @@
 package tournament
 
 import (
-	"bytes"
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -32,21 +32,15 @@ type byPoints []resultPair
 // Tally fills tournament table.
 func Tally(r io.Reader, w io.Writer) (err error) {
 
-	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(r)
-	if err != nil {
-		return
-	}
-	s := buf.String()
-
+	scanner := bufio.NewScanner(r)
 	results := make(result)
 	formatHeader := "%-31s|%4s|%4s|%4s|%4s|%3s\n"
 	formatBody := "%-31s|%3d |%3d |%3d |%3d |%3d\n"
 
-	lines := strings.Split(s, "\n")
 	fmt.Fprintf(w, formatHeader, "Team", "MP ", "W ", "D ", "L ", "P")
 
-	for _, line := range lines {
+	for scanner.Scan() {
+		line := scanner.Text()
 		if len(line) <= 1 || line[0] == '#' {
 			continue
 		}
