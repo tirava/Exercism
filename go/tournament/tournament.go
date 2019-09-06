@@ -16,21 +16,23 @@ const (
 	played
 )
 
-type score struct {
+type team struct {
+	player          string
 	win, draw, loss int
+	points          int
 }
 
-type result map[string]score
+type result map[string]team
 
-type resultPair struct {
-	player string
-	points int
-}
+//type resultPair struct {
+//	player string
+//	points int
+//}
 
-type byPoints []resultPair
+//type byPoints []resultPair
 
 // Tally fills tournament table.
-func Tally(r io.Reader, w io.Writer) (err error) {
+func Tally(r io.Reader, w io.Writer) error {
 
 	scanner := bufio.NewScanner(r)
 	results := make(result)
@@ -38,6 +40,8 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 	formatBody := "%-31s|%3d |%3d |%3d |%3d |%3d\n"
 
 	fmt.Fprintf(w, formatHeader, "Team", "MP ", "W ", "D ", "L ", "P")
+
+	//bp := make(byPoints, 0)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -51,6 +55,7 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 
 		p1 := results[result[player1]]
 		p2 := results[result[player2]]
+		//fmt.Println(p1, p2)
 
 		switch result[played] {
 		case "win":
@@ -66,14 +71,21 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 			return errors.New("incorrect result")
 		}
 
+		p1.player = result[player1]
+		p2.player = result[player2]
+		p1.points = p1.win*3 + p1.draw
+		p2.points = p2.win*3 + p2.draw
+
 		results[result[player1]] = p1
 		results[result[player2]] = p2
 	}
 
-	bp := make(byPoints, len(results))
+	bp := make([]team, len(results))
 	i := 0
 	for k, v := range results {
-		bp[i] = resultPair{k, v.win*3 + v.draw}
+		//bp[i] = resultPair{k, v.points}
+		bp[i].player = k
+		bp[i].points = v.points
 		i++
 	}
 	sort.Slice(bp, func(i, j int) bool {
@@ -89,5 +101,5 @@ func Tally(r io.Reader, w io.Writer) (err error) {
 			results[v.player].win, results[v.player].draw, results[v.player].loss, v.points)
 	}
 
-	return
+	return nil
 }
