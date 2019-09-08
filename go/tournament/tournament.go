@@ -22,26 +22,17 @@ type team struct {
 	points          int
 }
 
-type result map[string]team
-
-//type resultPair struct {
-//	player string
-//	points int
-//}
-
-//type byPoints []resultPair
+type games map[string]team
 
 // Tally fills tournament table.
 func Tally(r io.Reader, w io.Writer) error {
 
 	scanner := bufio.NewScanner(r)
-	results := make(result)
+	results := make(games)
 	formatHeader := "%-31s|%4s|%4s|%4s|%4s|%3s\n"
 	formatBody := "%-31s|%3d |%3d |%3d |%3d |%3d\n"
 
 	fmt.Fprintf(w, formatHeader, "Team", "MP ", "W ", "D ", "L ", "P")
-
-	//bp := make(byPoints, 0)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -55,7 +46,6 @@ func Tally(r io.Reader, w io.Writer) error {
 
 		p1 := results[result[player1]]
 		p2 := results[result[player2]]
-		//fmt.Println(p1, p2)
 
 		switch result[played] {
 		case "win":
@@ -83,7 +73,6 @@ func Tally(r io.Reader, w io.Writer) error {
 	bp := make([]team, len(results))
 	i := 0
 	for k, v := range results {
-		//bp[i] = resultPair{k, v.points}
 		bp[i].player = k
 		bp[i].points = v.points
 		i++
