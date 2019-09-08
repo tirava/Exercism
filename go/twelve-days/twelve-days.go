@@ -1,7 +1,10 @@
 // Package twelve implements output the lyrics to 'The Twelve Days of Christmas'.
 package twelve
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 var days = [...]string{
 	"first", "second", "third", "fourth", "fifth", "sixth",
@@ -24,30 +27,34 @@ var gifts = [...]string{
 }
 
 // Song returns all verses.
-func Song() (song string) {
+func Song() string {
+
+	sb := strings.Builder{}
+
 	for i := range days {
-		song += Verse(i + 1)
+		sb.WriteString(Verse(i + 1))
 		if i != len(days)-1 {
-			song += "\n"
+			sb.WriteString("\n")
 		}
 	}
-	return
+
+	return sb.String()
 }
 
 // Verse returns n-th verse.
 func Verse(in int) string {
-	s := ""
 
-	for i := 0; i < in; i++ {
-		if i == 0 {
-			s = gifts[i]
-			if in > 1 {
-				s = "and " + s
-			}
-		} else {
-			s = gifts[i] + ", " + s
+	sb := strings.Builder{}
+
+	for i := in - 1; i >= 0; i-- {
+		sb.WriteString(gifts[i])
+		if i >= 1 {
+			sb.WriteString(", ")
+		}
+		if i == 1 {
+			sb.WriteString("and ")
 		}
 	}
 
-	return fmt.Sprintf("On the %s day of Christmas my true love gave to me: %s.", days[in-1], s)
+	return fmt.Sprintf("On the %s day of Christmas my true love gave to me: %s.", days[in-1], sb.String())
 }
