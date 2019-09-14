@@ -11,7 +11,7 @@ import (
 // Matrix is the base type.
 type Matrix [][]int
 
-// .
+// New returns new matrix and checks them corrections.
 func New(in string) (Matrix, error) {
 
 	inR := strings.Split(in, "\n")
@@ -49,10 +49,14 @@ func (m Matrix) Set(row, col, val int) bool {
 	return true
 }
 
-// .
+// Rows returns duplicate Matrix rows.
 func (m Matrix) Rows() [][]int {
-
-	return nil
+	duplicate := make([][]int, len(m))
+	for i := range m {
+		duplicate[i] = make([]int, len(m[i]))
+		copy(duplicate[i], m[i])
+	}
+	return duplicate
 }
 
 // .
