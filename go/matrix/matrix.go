@@ -59,8 +59,14 @@ func (m Matrix) Rows() [][]int {
 	return duplicate
 }
 
-// .
+// Cols returns duplicate Matrix columns.
 func (m Matrix) Cols() [][]int {
-
-	return nil
+	duplicate := make([][]int, len(m[0]))
+	for j := range m[0] {
+		duplicate[j] = make([]int, len(m))
+		for i := range m {
+			duplicate[j][i] = m[i][j]
+		}
+	}
+	return duplicate
 }
