@@ -3,7 +3,6 @@ package matrix
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -29,7 +28,6 @@ func New(in string) (Matrix, error) {
 			if err != nil {
 				return nil, errors.New("bad matrix convert")
 			}
-			//fmt.Println(in, "->", inInt)
 			m[i] = append(m[i], inInt)
 		}
 		if i > 0 && len(m[i]) != len(m[i-1]) {
@@ -38,14 +36,15 @@ func New(in string) (Matrix, error) {
 		i++
 	}
 
-	fmt.Println(m)
-
 	return m, nil
 }
 
-// .
+// Set sets matrix values.
 func (m Matrix) Set(row, col, val int) bool {
-
+	if row < 0 || col < 0 || row > len(m)-1 || col > len(m[0])-1 {
+		return false
+	}
+	m[row][col] = val
 	return true
 }
 
