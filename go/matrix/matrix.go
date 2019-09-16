@@ -13,14 +13,13 @@ type Matrix [][]int
 // New returns new matrix and checks them corrections.
 func New(in string) (Matrix, error) {
 
-	inR := strings.Split(in, "\n")
-	m := make(Matrix, len(inR))
+	inRow := strings.Split(in, "\n")
+	m := make(Matrix, len(inRow))
 
-	i := 0
-	for _, c := range inR {
+	for i, c := range inRow {
 		m[i] = make([]int, 0)
-		inC := strings.Split(c, " ")
-		for _, s := range inC {
+		inCol := strings.Split(c, " ")
+		for _, s := range inCol {
 			if s == "" {
 				continue
 			}
@@ -33,7 +32,6 @@ func New(in string) (Matrix, error) {
 		if i > 0 && len(m[i]) != len(m[i-1]) {
 			return nil, errors.New("bad matrix length")
 		}
-		i++
 	}
 
 	return m, nil
