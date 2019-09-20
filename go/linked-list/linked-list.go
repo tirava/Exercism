@@ -3,7 +3,7 @@ package linkedlist
 
 import "errors"
 
-// ErrEmptyList is an error to return on an operation working on an empty list
+// ErrEmptyList is an error to return on an operation working on an empty list.
 var ErrEmptyList = errors.New("list is empty")
 
 // Element is a node of the doubly linked list
@@ -12,18 +12,18 @@ type Element struct {
 	prev, next *Element
 }
 
-// List is a structure representing a doubly linked list
+// List is a structure representing a doubly linked list.
 type List struct {
-	top, bottom *Element
+	first, last *Element
 }
 
-// Next returns a pointer to the next element of the node
+// Next returns a pointer to the next element of the node.
 func (e *Element) Next() *Element { return e.next }
 
-// Prev returns a pointer to the previous element of the node
+// Prev returns a pointer to the previous element of the node.
 func (e *Element) Prev() *Element { return e.prev }
 
-// NewList creates a new doubly linked list with the provided input elements
+// NewList creates a new doubly linked list with the provided input elements.
 func NewList(args ...interface{}) *List {
 	l := new(List)
 	for _, item := range args {
@@ -32,76 +32,76 @@ func NewList(args ...interface{}) *List {
 	return l
 }
 
-// PushFront pushes an element to the front of the list
+// PushFront pushes an element to the front of the list.
 func (l *List) PushFront(v interface{}) {
-	node := &Element{Val: v, next: l.top}
-	if l.bottom == nil && l.top == nil {
-		l.top, l.bottom = node, node
+	node := &Element{Val: v, next: l.first}
+	if l.last == nil && l.first == nil {
+		l.first, l.last = node, node
 		return
 	}
-	l.top.prev = node
-	l.top = node
+	l.first.prev = node
+	l.first = node
 }
 
-// PushBack pushes an element to the back of the list
+// PushBack pushes an element to the back of the list.
 func (l *List) PushBack(v interface{}) {
-	node := &Element{Val: v, prev: l.bottom}
-	if l.bottom == nil && l.top == nil {
-		l.top, l.bottom = node, node
+	node := &Element{Val: v, prev: l.last}
+	if l.last == nil && l.first == nil {
+		l.first, l.last = node, node
 		return
 	}
-	l.bottom.next = node
-	l.bottom = node
+	l.last.next = node
+	l.last = node
 }
 
 func (l *List) popCornerCase() (interface{}, error) {
-	if l.top == nil {
+	if l.first == nil {
 		return nil, ErrEmptyList
 	}
-	val := l.top.Val
-	l.top, l.bottom = nil, nil
+	val := l.first.Val
+	l.first, l.last = nil, nil
 	return val, nil
 }
 
-// PopFront pops an element from the back of the list
+// PopFront pops an element from the back of the list.
 func (l *List) PopFront() (interface{}, error) {
-	if l.top == l.bottom {
+	if l.first == l.last {
 		return l.popCornerCase()
 	}
-	val := l.top.Val
-	l.top = l.top.next
-	l.top.prev = nil
+	val := l.first.Val
+	l.first = l.first.next
+	l.first.prev = nil
 	return val, nil
 }
 
-// PopBack pops an element from the back of the list
+// PopBack pops an element from the back of the list.
 func (l *List) PopBack() (interface{}, error) {
-	if l.top == l.bottom {
+	if l.first == l.last {
 		return l.popCornerCase()
 	}
-	val := l.bottom.Val
-	l.bottom = l.bottom.prev
-	l.bottom.next = nil
+	val := l.last.Val
+	l.last = l.last.prev
+	l.last.next = nil
 	return val, nil
 }
 
-// Reverse returns a list with the elements reversed
+// Reverse returns a list with the elements reversed.
 func (l *List) Reverse() *List {
 	revL := l
-	itNode := revL.top
+	itNode := revL.first
 	for itNode != nil {
 		itNode.prev, itNode.next = itNode.next, itNode.prev
 		itNode = itNode.prev
 	}
-	l.top, l.bottom = l.bottom, l.top
+	l.first, l.last = l.last, l.first
 	return revL
 }
 
-// First return a pointer to the element at the front of the list
-func (l *List) First() *Element { return l.top }
+// First return a pointer to the element at the front of the list.
+func (l *List) First() *Element { return l.first }
 
-// Last return a pointer to the element at the back of the list
-func (l *List) Last() *Element { return l.bottom }
+// Last return a pointer to the element at the back of the list.
+func (l *List) Last() *Element { return l.last }
 
 //var ErrEmptyList = errors.New("the linked list is empty")
 //
