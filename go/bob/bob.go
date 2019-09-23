@@ -1,11 +1,11 @@
-// bob implements lackadaisical teenager
+// Package bob implements lackadaisical teenager.
 package bob
 
 import (
 	"strings"
 )
 
-// Hey returns Bob's answers
+// Hey returns Bob's answers.
 func Hey(remark string) string {
 	remark = strings.TrimSpace(remark)
 	isQuestion := strings.HasSuffix(remark, "?")
