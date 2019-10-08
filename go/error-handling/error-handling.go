@@ -14,12 +14,19 @@ func Use(o ResourceOpener, input string) error {
 		}
 	}()
 
-	res, err := o()
-	if _, ok := err.(TransientError); !ok {
-		return err
-	}
+	var res Resource
+	var err error
 
-	println("ffffffffffffffff")
+	for {
+		res, err = o()
+		if err != nil {
+			if _, ok := err.(TransientError); !ok {
+				return err
+			}
+		} else {
+			break
+		}
+	}
 
 	res.Frob(input)
 
