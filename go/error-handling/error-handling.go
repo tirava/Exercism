@@ -4,18 +4,21 @@ package erratum
 // Use opens a resource,
 // calls Frob(input) on the result resource
 // and then closes that resource.
-func Use(o ResourceOpener, input string) error {
-
-	defer func() {
-		err := recover()
-		if err != nil {
-			println("rrrrrrrrrrrrrrrrrrrr")
-			//res.Frob(input)
-		}
-	}()
+func Use(o ResourceOpener, input string) (err error) {
 
 	var res Resource
-	var err error
+
+	defer func() {
+		if e := recover(); e != nil {
+			if fe, ok := e.(FrobError); ok {
+				res.Defrob(fe.defrobTag)
+				err = fe.inner
+			} else {
+				err = e.(error)
+			}
+			_ = res.Close()
+		}
+	}()
 
 	for {
 		res, err = o()
@@ -30,7 +33,5 @@ func Use(o ResourceOpener, input string) error {
 
 	res.Frob(input)
 
-	res.Close()
-
-	return nil
+	return res.Close()
 }
