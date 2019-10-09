@@ -8,30 +8,25 @@ func Use(o ResourceOpener, input string) (err error) {
 
 	var res Resource
 
+	res, err = o()
+	for err != nil {
+		if _, ok := err.(TransientError); !ok {
+			return err
+		}
+		res, err = o()
+	}
+	defer res.Close()
+
 	defer func() {
 		if e := recover(); e != nil {
 			if fe, ok := e.(FrobError); ok {
 				res.Defrob(fe.defrobTag)
-				err = fe.inner
-			} else {
-				err = e.(error)
 			}
-			_ = res.Close()
+			err = e.(error)
 		}
 	}()
 
-	for {
-		res, err = o()
-		if err != nil {
-			if _, ok := err.(TransientError); !ok {
-				return err
-			}
-		} else {
-			break
-		}
-	}
-
 	res.Frob(input)
 
-	return res.Close()
+	return err
 }
