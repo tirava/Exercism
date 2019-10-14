@@ -8,9 +8,9 @@ import (
 
 // Account is the base account type.
 type Account struct {
+	mux     *sync.Mutex
 	active  bool
 	balance int64
-	mux     *sync.Mutex
 }
 
 // Open opens account.
@@ -18,7 +18,7 @@ func Open(initialDeposit int64) *Account {
 	if initialDeposit < 0 {
 		return nil
 	}
-	return &Account{true, initialDeposit, &sync.Mutex{}}
+	return &Account{&sync.Mutex{}, true, initialDeposit}
 }
 
 // Close close account.
@@ -34,6 +34,8 @@ func (a *Account) Close() (payout int64, ok bool) {
 
 // Balance returns account balance.
 func (a *Account) Balance() (balance int64, ok bool) {
+	a.mux.Lock()
+	defer a.mux.Unlock()
 	if !a.active {
 		return 0, false
 	}
