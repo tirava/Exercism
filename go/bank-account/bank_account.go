@@ -8,9 +8,9 @@ import (
 
 // Account is the base account type.
 type Account struct {
-	mux     *sync.Mutex
-	active  bool
+	sync.Mutex
 	balance int64
+	closed  bool
 }
 
 // Open opens account.
@@ -18,25 +18,25 @@ func Open(initialDeposit int64) *Account {
 	if initialDeposit < 0 {
 		return nil
 	}
-	return &Account{&sync.Mutex{}, true, initialDeposit}
+	return &Account{balance: initialDeposit}
 }
 
 // Close close account.
 func (a *Account) Close() (payout int64, ok bool) {
-	a.mux.Lock()
-	defer a.mux.Unlock()
-	if !a.active {
+	a.Lock()
+	defer a.Unlock()
+	if a.closed {
 		return 0, false
 	}
-	a.active = false
+	a.closed = true
 	return a.balance, true
 }
 
 // Balance returns account balance.
 func (a *Account) Balance() (balance int64, ok bool) {
-	a.mux.Lock()
-	defer a.mux.Unlock()
-	if !a.active {
+	a.Lock()
+	defer a.Unlock()
+	if a.closed {
 		return 0, false
 	}
 	return a.balance, true
@@ -44,9 +44,9 @@ func (a *Account) Balance() (balance int64, ok bool) {
 
 // Deposit deposits of money.
 func (a *Account) Deposit(amount int64) (newBalance int64, ok bool) {
-	a.mux.Lock()
-	defer a.mux.Unlock()
-	if !a.active {
+	a.Lock()
+	defer a.Unlock()
+	if a.closed {
 		return 0, false
 	}
 	a.balance += amount
