@@ -7,28 +7,27 @@ type Relation string
 
 // Sublist returns result of relation of two lists.
 func Sublist(list1, list2 []int) Relation {
-	len1, len2 := len(list1), len(list2)
 
-	if len1 > 0 && len2 == 0 {
-		return "superlist"
+	if len(list1) <= len(list2) {
+		return Relation(list(list1, list2, "sub"))
 	}
+	return Relation(list(list2, list1, "super"))
+}
 
-	if len1 <= len2 {
-		for i := 0; i < len2; i++ {
-			if i+len1 > len2 {
-				return "unequal"
-			}
-			b := list2[i : i+len1]
-			if equal(list1, b) {
-				if i == 0 && len2 == len1 {
-					break
-				} else {
-					return "sublist"
-				}
+func list(a, b []int, s string) string {
+	for i := 0; i < len(b); i++ {
+		if i+len(a) > len(b) {
+			return "unequal"
+		}
+		bb := b[i : i+len(a)]
+		if equal(a, bb) {
+			if i == 0 && len(b) == len(a) {
+				break
+			} else {
+				return s + "list"
 			}
 		}
 	}
-
 	return "equal"
 }
 
