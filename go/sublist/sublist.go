@@ -1,8 +1,9 @@
-// package sublists implements determine
+// Package sublist implements determine
 // if the first list is contained within the second list
 // and vise versa.
 package sublist
 
+// Relation is the base comparision type.
 type Relation string
 
 // Sublist returns result of relation of two lists.
