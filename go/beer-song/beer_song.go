@@ -62,12 +62,25 @@ func Verse(numVerse int) (string, error) {
 
 // Verses returns verses from upper to lower.
 func Verses(upper, lower int) (string, error) {
-
-	return "", nil
+	if upper < lower {
+		return "", errors.New("start < stop")
+	}
+	out := ""
+	for i := upper; i >= lower; i-- {
+		v, err := Verse(i)
+		if err != nil {
+			return "", errors.New("invalid verses numbers")
+		}
+		out += v + "\n"
+	}
+	return out, nil
 }
 
 // Song returns all beer song.
 func Song() string {
-
-	return ""
+	song, err := Verses(99, 0)
+	if err != nil {
+		return "invalid call of verses"
+	}
+	return song
 }
