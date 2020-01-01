@@ -15,32 +15,20 @@ var plantsLetters = map[rune]string{
 	'V': "violets",
 }
 
-//var indexes = map[string]int{
-//	"Alice":   1,
-//	"Bob":     2,
-//	"Charlie": 3,
-//	"David":   4,
-//	"Eve":     5,
-//	"Fred":    6,
-//	"Ginny":   7,
-//	"Harriet": 8,
-//	"Ileana":  9,
-//	"Joseph":  10,
-//	"Kincaid": 11,
-//	"Larry":   12,
-//}
-
 // Garden is the base type.
 type Garden struct {
-	indexes map[string]int
-	diagram []string
-	//children []string
+	indexes  map[string]int
+	diagram  []string
+	children []string
 }
 
 // NewGarden constructor returns new Garden.
 func NewGarden(diagram string, children []string) (*Garden, error) {
-	sort.Strings(children)
 	g := &Garden{}
+
+	g.children = make([]string, len(children))
+	copy(g.children, children)
+	sort.Strings(g.children)
 
 	g.diagram = strings.Split(diagram, "\n")
 	if len(g.diagram) != 3 {
@@ -55,8 +43,8 @@ func NewGarden(diagram string, children []string) (*Garden, error) {
 		return nil, errors.New("bad caps diagram")
 	}
 
-	g.indexes = make(map[string]int, len(children))
-	for i, c := range children {
+	g.indexes = make(map[string]int, len(g.children))
+	for i, c := range g.children {
 		if c == "" {
 			return nil, errors.New("no children")
 		}
@@ -65,6 +53,7 @@ func NewGarden(diagram string, children []string) (*Garden, error) {
 		}
 		g.indexes[c] = i + 1
 	}
+
 	return g, nil
 }
 
@@ -82,7 +71,6 @@ func (g *Garden) Plants(child string) ([]string, bool) {
 
 	for i, d := range diag1 + diag2 {
 		gardens[i] = plantsLetters[d]
-		//fmt.Println(plantsLetters[d])
 	}
 
 	return gardens, true
