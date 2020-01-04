@@ -33,10 +33,9 @@ var otherLines = [...]string{
 
 // Verse returns concrete verse of the song.
 func Verse(n int) string {
-
 	others := ""
 
-	for i := n - 2; i < 0; i-- {
+	for i := n - 2; i >= 0; i-- {
 		others += "\n" + otherLines[i]
 	}
 
@@ -46,9 +45,14 @@ func Verse(n int) string {
 // Song returns all song.
 func Song() string {
 	result := ""
+
 	for i := 1; i < 13; i++ {
-		result += Verse(i) + "\n"
+		result += Verse(i)
+		if i != 12 {
+			result += "\n\n"
+		}
 	}
+
 	return result
 }
 
