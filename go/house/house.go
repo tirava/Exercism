@@ -2,6 +2,8 @@
 // 'This is the House that Jack Built'.
 package house
 
+import "strings"
+
 var firstLines = [...]string{
 	"This is the house that Jack built.",
 	"This is the malt",
@@ -33,27 +35,27 @@ var otherLines = [...]string{
 
 // Verse returns concrete verse of the song.
 func Verse(n int) string {
-	others := ""
+	sb := strings.Builder{}
+	sb.WriteString(firstLines[n-1])
 
 	for i := n - 2; i >= 0; i-- {
-		others += "\n" + otherLines[i]
+		sb.WriteString("\n")
+		sb.WriteString(otherLines[i])
 	}
 
-	return firstLines[n-1] + others
+	return sb.String()
 }
 
 // Song returns all song.
 func Song() string {
-	result := ""
+	sb := strings.Builder{}
 
 	for i := 1; i < 13; i++ {
-		result += Verse(i)
+		sb.WriteString(Verse(i))
 		if i != 12 {
-			result += "\n\n"
+			sb.WriteString("\n\n")
 		}
 	}
 
-	return result
+	return sb.String()
 }
-
-// builder
