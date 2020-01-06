@@ -7,7 +7,7 @@ import "errors"
 // CanQueenAttack returns attack answer or error.
 func CanQueenAttack(w, b string) (bool, error) {
 
-	if len(w) > 2 || len(b) > 2 || w == b || len(w) < 2 || len(b) < 2 {
+	if len(w) != 2 || len(b) != 2 || w == b {
 		return false, errors.New("invalid queen position length")
 	}
 
@@ -22,9 +22,9 @@ func CanQueenAttack(w, b string) (bool, error) {
 		return true, nil
 	}
 
-	absW, absB := (yw-1)*8 + xw, (yb-1)*8 + xb
+	absW, absB := (yw-1)*8+xw, (yb-1)*8+xb
 
-	if (absW - absB) % 7 == 0 || (absW - absB) % 9 == 0 {
+	if (absW-absB)%7 == 0 || (absW-absB)%9 == 0 {
 		return true, nil
 	}
 
