@@ -1,6 +1,11 @@
 // Package stringset implements a custom data structure of some type (set).
 package stringset
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Implement Set as a collection of unique string values.
 //
 // For Set.String, use '{' and '}', output elements as double-quoted strings
@@ -20,14 +25,19 @@ func New() Set {
 
 // NewFromSlice returns set from slice.
 func NewFromSlice(s []string) Set {
-
-	return Set{}
+	s = removeDuplicates(s)
+	elems := make([]string, len(s))
+	copy(elems, s)
+	return Set{elems: elems}
 }
 
 // String returns string view of the set.
 func (s Set) String() string {
-
-	return ""
+	sb := strings.Builder{}
+	for _, e := range s.elems {
+		sb.WriteString(fmt.Sprintf("\"%s\", ", e))
+	}
+	return fmt.Sprintf("{%s}", strings.TrimRight(sb.String(), ", "))
 }
 
 // IsEmpty returns empty flag.
@@ -81,4 +91,18 @@ func Difference(s1, s2 Set) Set {
 func Union(s1, s2 Set) Set {
 
 	return Set{}
+}
+
+func removeDuplicates(s []string) []string {
+	seen := make(map[string]struct{}, len(s))
+	j := 0
+	for _, v := range s {
+		if _, ok := seen[v]; ok {
+			continue
+		}
+		seen[v] = struct{}{}
+		s[j] = v
+		j++
+	}
+	return s[:j]
 }
