@@ -3,6 +3,7 @@ package stringset
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -81,13 +82,25 @@ func Disjoint(s1, s2 Set) bool {
 
 // Equal returns flag is sets equal.
 func Equal(s1, s2 Set) bool {
-
+	sort.Slice(s1.elems, func(i, j int) bool { return s1.elems[i] < s1.elems[j] })
+	sort.Slice(s2.elems, func(i, j int) bool { return s2.elems[i] < s2.elems[j] })
+	s11 := strings.Join(s1.elems, "")
+	s21 := strings.Join(s2.elems, "")
+	if s11 == s21 {
+		return true
+	}
 	return false
 }
 
 // Add adds string into set.
-func (s Set) Add(string) {
-
+func (s *Set) Add(elem string) {
+	for _, e := range s.elems {
+		if e == elem {
+			return
+		}
+	}
+	s.elems = append(s.elems, elem)
+	sort.Slice(s.elems, func(i, j int) bool { return s.elems[i] < s.elems[j] })
 }
 
 // Intersection returns set of inter sets.
