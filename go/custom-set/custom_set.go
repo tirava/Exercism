@@ -105,14 +105,33 @@ func (s *Set) Add(elem string) {
 
 // Intersection returns set of inter sets.
 func Intersection(s1, s2 Set) Set {
-
-	return Set{}
+	elems := make([]string, 0)
+	for _, e1 := range s1.elems {
+		for _, e2 := range s2.elems {
+			if e1 == e2 {
+				elems = append(elems, e1)
+			}
+		}
+	}
+	return Set{elems: elems}
 }
 
 // Difference returns diff of the sets.
 func Difference(s1, s2 Set) Set {
-
-	return Set{}
+	if len(s2.elems) == 0 {
+		return s1
+	}
+	elems := make([]string, 0)
+	for _, e1 := range s1.elems {
+		for _, e2 := range s2.elems {
+			if e1 != e2 {
+				elems = append(elems, e1)
+			}
+			break
+		}
+	}
+	removeDuplicates(elems)
+	return Set{elems: elems}
 }
 
 // Union returns union of the sets.
