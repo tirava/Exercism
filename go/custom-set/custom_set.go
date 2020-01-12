@@ -42,26 +42,41 @@ func (s Set) String() string {
 
 // IsEmpty returns empty flag.
 func (s Set) IsEmpty() bool {
-
+	if len(s.elems) == 0 {
+		return true
+	}
 	return false
 }
 
 // Has return has element flag.
-func (s Set) Has(string) bool {
-
+func (s Set) Has(has string) bool {
+	for _, v := range s.elems {
+		if v == has {
+			return true
+		}
+	}
 	return false
 }
 
 // Subset returns sub elements in set.
 func Subset(s1, s2 Set) bool {
-
+	s11 := strings.Join(s1.elems, "")
+	s21 := strings.Join(s2.elems, "")
+	if strings.Contains(s21, s11) {
+		return true
+	}
 	return false
 }
 
 // Disjoint returns flag is sets disjoint.
 func Disjoint(s1, s2 Set) bool {
-
-	return false
+	s21 := strings.Join(s2.elems, "")
+	for _, s := range s1.elems {
+		if strings.Contains(s21, s) {
+			return false
+		}
+	}
+	return true
 }
 
 // Equal returns flag is sets equal.
