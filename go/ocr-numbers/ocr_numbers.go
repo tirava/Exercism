@@ -2,61 +2,42 @@
 package ocr
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
 
 var templates = map[string]int{
-	`
- _ 
+	` _ 
 | |
-|_|
-   `: 0,
-	`
-   
+|_|`: 0,
+	`   
   |
-  |
-   `: 1,
-	`
- _ 
+  |`: 1,
+	` _ 
  _|
+|_ `: 2,
+	` _ 
+ _|
+ _|`: 3,
+	`   
+|_|
+  |`: 4,
+	` _ 
 |_ 
-   `: 2,
-	`
- _ 
- _|
- _|
-   `: 3,
-	`
-   
-|_|
-  |
-   `: 4,
-	`
- _ 
+ _|`: 5,
+	` _ 
 |_ 
- _|
-   `: 5,
-	`
- _ 
-|_ 
-|_|
-   `: 6,
-	`
- _ 
+|_|`: 6,
+	` _ 
   |
-  |
-   `: 7,
-	`
- _ 
+  |`: 7,
+	` _ 
 |_|
+|_|`: 8,
+	` _ 
 |_|
-   `: 8,
-	`
- _ 
-|_|
- _|
-   `: 9,
+ _|`: 9,
 }
 
 func trimDigit(s string) string {
@@ -68,7 +49,7 @@ func trimDigit(s string) string {
 
 func recognizeDigit(s string) int {
 
-	if v, ok := templates[s]; ok {
+	if v, ok := templates[trimDigit(s)]; ok {
 		return v
 	}
 
@@ -80,6 +61,17 @@ func recognizeDigit(s string) int {
 func Recognize(digits string) []string {
 
 	result := make([]string, 0)
+	numDigits := len(digits) / 12
+	//fmt.Println(len(digits), numDigits)
+
+	digit := ""
+	for i := 0; i < numDigits; i++ { //1,5,9     1,11,18, 5,12,19
+		digit = digits[i*numDigits+1 : i*numDigits+5]
+		digit += digits[i*numDigits*3+5 : i*numDigits*3+5+4]
+		digit += digits[i*numDigits*3*2+5+4 : i*numDigits*3*2+5+4+4]
+
+		fmt.Println(digit)
+	}
 
 	d := recognizeDigit(digits)
 	if d == -1 {
