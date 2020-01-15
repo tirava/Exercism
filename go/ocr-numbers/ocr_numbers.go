@@ -40,20 +40,12 @@ var templates = map[string]int{
  _|`: 9,
 }
 
-func trimDigit(s string) string {
-	s = strings.Trim(s, "\n")
-	s = strings.TrimRight(s, " ")
-	s = strings.Trim(s, "\n")
-	return s
-}
-
 func recognizeDigit(s string) int {
 
-	if v, ok := templates[trimDigit(s)]; ok {
+	if v, ok := templates[s]; ok {
 		return v
 	}
 
-	//fmt.Println([]byte(trimDigit(s)))
 	return -1
 }
 
@@ -62,21 +54,23 @@ func Recognize(digits string) []string {
 
 	result := make([]string, 0)
 	numDigits := len(digits) / 12
-	//fmt.Println(len(digits), numDigits)
 
-	digit := ""
-	for i := 0; i < numDigits; i++ { //1,5,9     1,11,18, 5,12,19
-		digit = digits[i*numDigits+1 : i*numDigits+5]
-		digit += digits[i*numDigits*3+5 : i*numDigits*3+5+4]
-		digit += digits[i*numDigits*3*2+5+4 : i*numDigits*3*2+5+4+4]
+	digits = strings.TrimLeft(digits, "\n")
+	for i := 0; i < numDigits; i++ {
+		digit := ""
+		for j := 0; j < 3; j++ {
+			start := (numDigits*3+1)*j + 3*i
+			digit += digits[start:start+3] + "\n"
+		}
 
+		digit = strings.TrimRight(digit, "\n")
 		fmt.Println(digit)
-	}
 
-	d := recognizeDigit(digits)
-	if d == -1 {
-		result = append(result, "?")
-	} else {
+		d := recognizeDigit(digit)
+		if d == -1 {
+			result = []string{"?"}
+			return result
+		}
 		result = append(result, strconv.Itoa(d))
 	}
 
