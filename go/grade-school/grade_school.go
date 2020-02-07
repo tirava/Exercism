@@ -1,6 +1,10 @@
 // Package school implements graduating school students.
 package school
 
+import (
+	"sort"
+)
+
 // Grade is the base grade struct.
 type Grade struct {
 	grade    int
@@ -8,24 +12,46 @@ type Grade struct {
 }
 
 // School is the base school type.
-type School struct{}
+type School struct {
+	grades map[int][]string
+}
 
 // New returns new school.
 func New() *School {
-	return &School{}
+	return &School{
+		grades: make(map[int][]string),
+	}
 }
 
-// Add adds grade and students.
-func (s *School) Add(string, int) {
-
+// Add adds student into grade.
+func (s *School) Add(name string, grade int) {
+	s.grades[grade] = append(s.grades[grade], name)
 }
 
-// Grade grades students.
-func (s *School) Grade(int) []string {
-	return nil
+// Grade returns students for given grade.
+func (s *School) Grade(grade int) []string {
+	return s.grades[grade]
 }
 
-// Enrollment enroll students.
+// Enrollment enroll all students.
 func (s *School) Enrollment() []Grade {
-	return nil
+	result := make([]Grade, 0)
+
+	keys := make([]int, 0)
+	for k := range s.grades {
+		keys = append(keys, k)
+	}
+
+	sort.Ints(keys)
+
+	for _, k := range keys {
+		v := s.grades[k]
+		sort.Strings(v)
+		result = append(result, Grade{
+			grade:    k,
+			students: v,
+		})
+	}
+
+	return result
 }
