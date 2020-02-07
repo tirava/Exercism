@@ -19,7 +19,7 @@ type School struct {
 // New returns new school.
 func New() *School {
 	return &School{
-		grades: make(map[int][]string),
+		grades: make(map[int][]string, 0),
 	}
 }
 
@@ -35,22 +35,24 @@ func (s *School) Grade(grade int) []string {
 
 // Enrollment enroll all students.
 func (s *School) Enrollment() []Grade {
-	result := make([]Grade, 0)
+	result := make([]Grade, len(s.grades))
 
-	keys := make([]int, 0)
+	keys := make([]int, len(s.grades))
+	i := 0
 	for k := range s.grades {
-		keys = append(keys, k)
+		keys[i] = k
+		i++
 	}
 
 	sort.Ints(keys)
 
-	for _, k := range keys {
+	for i, k := range keys {
 		v := s.grades[k]
 		sort.Strings(v)
-		result = append(result, Grade{
+		result[i] = Grade{
 			grade:    k,
 			students: v,
-		})
+		}
 	}
 
 	return result
