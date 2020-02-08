@@ -28,7 +28,7 @@ func TestSaddle(t *testing.T) {
 				test.m, err)
 		}
 		if sp := m.Saddle(); !eq(sp, test.sp) {
-			t.Fatalf("%v.Saddle() = %v, want %v", m, sp, test.sp)
+			t.Errorf("%v.Saddle() = %v, want %v", m, sp, test.sp)
 		}
 	}
 }
