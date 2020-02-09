@@ -1,46 +1,49 @@
 package matrix
 
-import "fmt"
-
 // Pair is the base pair type.
 type Pair [2]int
 
+// Saddle returns saddle points.
 func (m Matrix) Saddle() []Pair {
-	//maxRows := make([]Pair, 0)
-	cols := m.Cols()
+	saddlePoints := make([]Pair, 0)
+	maxRow := make([]Pair, 0)
+	minCol := make([]Pair, 0)
 
-	X, Y := -1, -1
-	for _, row := range m.Rows() {
+	for Y, row := range m.Rows() {
 		maxVal := -999999
-		for x, val := range row {
-			if val >= maxVal {
-				maxVal = val
-				X = x
-				minVal := 999999
-				for y, val := range cols[x] {
-					if val <= minVal {
-						minVal = val
-						Y = y
-					}
-				}
+		for _, valX := range row {
+			if valX > maxVal {
+				maxVal = valX
 			}
 		}
-		fmt.Println(X, Y)
+		for X, valX := range row {
+			if valX == maxVal {
+				maxRow = append(maxRow, Pair{Y, X})
+			}
+		}
 	}
 
-	//for _, col := range m.Cols() {
-	//	minVal := 999999
-	//	for y, val := range col {
-	//		if val <= minVal {
-	//			minVal = val
-	//			Y = y
-	//		}
-	//	}
-	//	fmt.Println(Y)
-	//}
+	for X, col := range m.Cols() {
+		minVal := 999999
+		for _, valY := range col {
+			if valY < minVal {
+				minVal = valY
+			}
+		}
+		for Y, valY := range col {
+			if valY == minVal {
+				minCol = append(minCol, Pair{Y, X})
+			}
+		}
+	}
 
-	//fmt.Println(X, Y)
-	fmt.Println(m.Rows())
-	fmt.Println(m.Cols())
-	return nil
+	for _, pairRow := range maxRow {
+		for _, pairCol := range minCol {
+			if pairRow == pairCol {
+				saddlePoints = append(saddlePoints, pairRow)
+			}
+		}
+	}
+
+	return saddlePoints
 }
