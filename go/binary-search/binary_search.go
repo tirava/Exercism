@@ -13,23 +13,28 @@ package binarysearch
 //
 //	return result
 //}
-func SearchInts(data []int, x int) int {
-	result := -1
-	len := len(data) - 1
+func SearchInts(list []int, x int) int {
+	var low int
+	high := len(list) - 1
 
 	for {
-		len /= 2
-
-		if len == 0 {
-			if data[0] !=x {
-				break
-			} else {
-				result = 0
-			}
+		if low > high {
+			break
 		}
 
-		if
+		mid := (low + high) / 2
+		guess := list[mid]
+
+		if guess == x {
+			return mid
+		}
+
+		if guess > x {
+			high = mid - 1
+		} else {
+			low = mid + 1
+		}
 	}
 
-	return result
+	return -1
 }
