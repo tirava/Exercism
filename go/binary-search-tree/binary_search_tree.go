@@ -22,21 +22,21 @@ func (std *SearchTreeData) Insert(elem int) {
 
 	for {
 		if elem > nextElem.data {
-			nextElem = nextElem.right
-			//if std.right == nil {
-			//	std.right = newElem
-			//}
-			//std.right = nextElem
-		} else {
-			nextElem = nextElem.left
-		}
+			if nextElem.right == nil {
+				nextElem.right = newElem
+				break
+			}
 
-		if elem <= std.data && std.left == nil {
-			std.left = newElem
+			nextElem = nextElem.right
 			continue
 		}
 
-		if
+		if nextElem.left == nil {
+			nextElem.left = newElem
+			break
+		}
+
+		nextElem = nextElem.left
 	}
 }
 
