@@ -41,11 +41,30 @@ func (std *SearchTreeData) Insert(elem int) {
 }
 
 // MapString maps tree to string slice.
-func (std *SearchTreeData) MapString(func(int) string) []string {
+func (std *SearchTreeData) MapString(convert func(int) string) []string {
+	//result := make([]string, 0)
+
+	//return visitRecursive(result)
 	return nil
 }
 
 // MapInt maps tree to int slice.
-func (std *SearchTreeData) MapInt(func(int) int) []int {
-	return nil
+func (std *SearchTreeData) MapInt(convert func(int) int) []int {
+	result := make([]int, 0)
+
+	return *visitRecursive(std, &result)
+}
+
+func visitRecursive(root *SearchTreeData, in *[]int) *[]int {
+	if root.left != nil {
+		visitRecursive(root.left, in)
+	}
+
+	*in = append(*in, root.data)
+
+	if root.right != nil {
+		visitRecursive(root.right, in)
+	}
+
+	return in
 }
