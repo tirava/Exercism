@@ -42,10 +42,14 @@ func (std *SearchTreeData) Insert(elem int) {
 
 // MapString maps tree to string slice.
 func (std *SearchTreeData) MapString(convert func(int) string) []string {
-	//result := make([]string, 0)
+	result := make([]string, 0)
+	in := make([]int, 0)
 
-	//return visitRecursive(result)
-	return nil
+	for _, v := range *visitRecursive(std, &in) {
+		result = append(result, convert(v))
+	}
+
+	return result
 }
 
 // MapInt maps tree to int slice.
