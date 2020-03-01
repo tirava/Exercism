@@ -31,9 +31,10 @@ func SearchInts(list []int, x int) int {
 
 		if guess > x {
 			high = mid - 1
-		} else {
-			low = mid + 1
+			continue
 		}
+
+		low = mid + 1
 	}
 
 	return -1
