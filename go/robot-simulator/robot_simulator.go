@@ -72,7 +72,6 @@ func StartRobot(cmd chan Command, act chan Action) {
 		}
 	}
 
-	println("S2R close")
 	close(act)
 }
 
@@ -91,10 +90,26 @@ func Room(extent Rect, robot Step2Robot, act chan Action, rep chan Step2Robot) {
 		case "Advance":
 			Advance()
 		}
+
+		if Step1Robot.X < int(extent.Min.Easting) {
+			Step1Robot.X = int(extent.Min.Easting)
+		}
+		if Step1Robot.Y < int(extent.Min.Northing) {
+			Step1Robot.Y = int(extent.Min.Northing)
+		}
+		if Step1Robot.X > int(extent.Max.Easting) {
+			Step1Robot.X = int(extent.Max.Easting)
+		}
+		if Step1Robot.Y > int(extent.Max.Northing) {
+			Step1Robot.Y = int(extent.Max.Northing)
+		}
 	}
 
 	s2r.Dir = Step1Robot.Dir
 	s2r.Pos = Pos{RU(Step1Robot.X), RU(Step1Robot.Y)}
-	println("Sent report")
+
 	rep <- s2r
+
+	Step1Robot.X, Step1Robot.Y = 0, 0
+	Step1Robot.Dir = N
 }
