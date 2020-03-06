@@ -122,6 +122,12 @@ type Action3 struct {
 
 // StartRobot3 extends robots features.
 func StartRobot3(name, script string, action chan Action3, log chan string) {
+	if name == "" {
+		log <- "A robot without a name"
+		action <- Action3{name, "End"}
+		return
+	}
+
 	for _, c := range script {
 		switch c {
 		case 'R':
@@ -142,6 +148,12 @@ func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []
 	var isWall bool
 
 	for i, r := range robots {
+		if _, ok := s3r[r.Name]; ok {
+			log <- "Duplicate robot names"
+			report <- robots
+			return
+		}
+
 		s3r[r.Name] = &robots[i]
 	}
 
