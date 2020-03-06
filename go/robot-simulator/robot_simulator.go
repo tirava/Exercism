@@ -113,3 +113,95 @@ func Room(extent Rect, robot Step2Robot, act chan Action, rep chan Step2Robot) {
 	Step1Robot.X, Step1Robot.Y = 0, 0
 	Step1Robot.Dir = N
 }
+
+// Action3 base type.
+type Action3 struct {
+	name   string
+	action string
+}
+
+// StartRobot3 extends robots features.
+func StartRobot3(name, script string, action chan Action3, log chan string) {
+	for c := range script {
+		switch c {
+		case 'R':
+			action <- Action3{name, "Right"}
+		case 'L':
+			action <- Action3{name, "Left"}
+		case 'A':
+			action <- Action3{name, "Advance"}
+		}
+	}
+
+	action <- Action3{name, "End"}
+}
+
+// Room3 is extended room.
+func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []Step3Robot, log chan string) {
+	s3r := make(map[string]*Step3Robot, len(robots))
+
+	for _, r := range robots {
+		s3r[r.Name] = &r
+	}
+
+	count := len(robots)
+	for a := range action {
+		switch a.action {
+		case "Right":
+			Right3(s3r[a.name])
+		case "Left":
+			Left3(s3r[a.name])
+		case "Advance":
+			Advance3(s3r[a.name])
+		case "End":
+			count--
+			if count == 0 {
+				close(action)
+			}
+		}
+	}
+
+	report <- robots
+}
+
+// Right3 stepping.
+func Right3(robot *Step3Robot) {
+	switch robot.Dir {
+	case N:
+		robot.Dir = E
+	case E:
+		robot.Dir = S
+	case S:
+		robot.Dir = W
+	case W:
+		robot.Dir = N
+	}
+}
+
+// Left3 stepping.
+func Left3(robot *Step3Robot) {
+	switch robot.Dir {
+	case N:
+		robot.Dir = W
+	case W:
+		robot.Dir = S
+	case S:
+		robot.Dir = E
+	case E:
+		robot.Dir = N
+	}
+}
+
+// Advance3 for stepping.
+func Advance3(robot *Step3Robot) {
+	switch robot.Dir {
+	case N:
+		robot.Northing++
+	case S:
+		robot.Northing--
+	case E:
+		robot.Easting++
+	case W:
+		robot.Easting--
+	}
+}
