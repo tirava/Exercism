@@ -122,7 +122,7 @@ type Action3 struct {
 
 // StartRobot3 extends robots features.
 func StartRobot3(name, script string, action chan Action3, log chan string) {
-	for c := range script {
+	for _, c := range script {
 		switch c {
 		case 'R':
 			action <- Action3{name, "Right"}
@@ -139,9 +139,10 @@ func StartRobot3(name, script string, action chan Action3, log chan string) {
 // Room3 is extended room.
 func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []Step3Robot, log chan string) {
 	s3r := make(map[string]*Step3Robot, len(robots))
+	var isWall bool
 
-	for _, r := range robots {
-		s3r[r.Name] = &r
+	for i, r := range robots {
+		s3r[r.Name] = &robots[i]
 	}
 
 	count := len(robots)
@@ -158,6 +159,28 @@ func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []
 			if count == 0 {
 				close(action)
 			}
+		}
+
+		if s3r[a.name].Easting < extent.Min.Easting {
+			s3r[a.name].Easting = extent.Min.Easting
+			isWall = true
+		}
+		if s3r[a.name].Northing < extent.Min.Northing {
+			s3r[a.name].Northing = extent.Min.Northing
+			isWall = true
+		}
+		if s3r[a.name].Easting > extent.Max.Easting {
+			s3r[a.name].Easting = extent.Max.Easting
+			isWall = true
+		}
+		if s3r[a.name].Northing > extent.Max.Northing {
+			s3r[a.name].Northing = extent.Max.Northing
+			isWall = true
+		}
+
+		if isWall {
+			isWall = false
+			log <- "A robot attempting to advance into a wall"
 		}
 	}
 
