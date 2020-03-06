@@ -150,6 +150,7 @@ OUTER:
 func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []Step3Robot, log chan string) {
 	s3r := make(map[string]*Step3Robot, len(robots))
 	var isWall bool
+	var isBattle int
 
 	for i, r := range robots {
 		if _, ok := s3r[r.Name]; ok {
@@ -189,6 +190,12 @@ func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []
 			Left3(s3r[a.name])
 		case "Advance":
 			Advance3(s3r[a.name])
+			if ok := checkSameDir(robots); !ok {
+				isBattle++
+				if isBattle%2 == 0 {
+					log <- "A robot attempting to advance into another robot"
+				}
+			}
 		case "End":
 			count--
 			if count == 0 {
@@ -217,6 +224,7 @@ func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []
 			isWall = false
 			log <- "A robot attempting to advance into a wall"
 		}
+
 	}
 
 	report <- robots
@@ -266,9 +274,28 @@ func Advance3(robot *Step3Robot) {
 
 func checkSamePos(robots []Step3Robot) bool {
 	for i := 0; i < len(robots)-1; i++ {
-		for j := 1; j < len(robots); j++ {
+		for j := i + 1; j < len(robots); j++ {
 			if robots[i].Pos == robots[j].Pos {
 				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func checkSameDir(robots []Step3Robot) bool {
+	for i := 0; i < len(robots)-1; i++ {
+		for j := i + 1; j < len(robots); j++ {
+			if (robots[i].Dir == N && robots[j].Dir == S) || (robots[i].Dir == S && robots[j].Dir == N) {
+				if robots[i].Easting == robots[j].Easting {
+					return false
+				}
+			}
+			if (robots[i].Dir == E && robots[j].Dir == W) || (robots[i].Dir == W && robots[j].Dir == E) {
+				if robots[i].Northing == robots[j].Northing {
+					return false
+				}
 			}
 		}
 	}
