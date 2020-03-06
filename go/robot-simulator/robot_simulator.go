@@ -128,6 +128,7 @@ func StartRobot3(name, script string, action chan Action3, log chan string) {
 		return
 	}
 
+OUTER:
 	for _, c := range script {
 		switch c {
 		case 'R':
@@ -136,6 +137,9 @@ func StartRobot3(name, script string, action chan Action3, log chan string) {
 			action <- Action3{name, "Left"}
 		case 'A':
 			action <- Action3{name, "Advance"}
+		default:
+			log <- "An undefined command in a script"
+			break OUTER
 		}
 	}
 
@@ -154,11 +158,30 @@ func Room3(extent Rect, robots []Step3Robot, action chan Action3, report chan []
 			return
 		}
 
+		if r.Easting < extent.Min.Easting || r.Easting > extent.Max.Easting ||
+			r.Northing < extent.Min.Northing || r.Northing > extent.Max.Northing {
+			log <- "A robot placed outside of the room"
+			report <- robots
+			return
+		}
+
 		s3r[r.Name] = &robots[i]
+	}
+
+	if ok := checkSamePos(robots); !ok {
+		log <- "Robots placed at the same place"
+		report <- robots
+		return
 	}
 
 	count := len(robots)
 	for a := range action {
+		if _, ok := s3r[a.name]; !ok {
+			log <- "An action from an unknown robot"
+			report <- robots
+			return
+		}
+
 		switch a.action {
 		case "Right":
 			Right3(s3r[a.name])
@@ -239,4 +262,16 @@ func Advance3(robot *Step3Robot) {
 	case W:
 		robot.Easting--
 	}
+}
+
+func checkSamePos(robots []Step3Robot) bool {
+	for i := 0; i < len(robots)-1; i++ {
+		for j := 1; j < len(robots); j++ {
+			if robots[i].Pos == robots[j].Pos {
+				return false
+			}
+		}
+	}
+
+	return true
 }
