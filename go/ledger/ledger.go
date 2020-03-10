@@ -1,3 +1,4 @@
+// Package ledger implements.
 package ledger
 
 import (
@@ -7,10 +8,17 @@ import (
 	"strings"
 )
 
+// Entry.
 type Entry struct {
 	Date        string // "Y-m-d"
 	Description string
 	Change      int // in cents
+}
+
+type records struct {
+	i int
+	s string
+	e error
 }
 
 func FormatLedger(currency string, locale string, entries []Entry) (string, error) {
@@ -33,46 +41,19 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 
 	var s string
 	if locale == "nl-NL" {
-		s = "Datum" +
-			strings.Repeat(" ", 10-len("Datum")) +
-			" | " +
-			"Omschrijving" +
-			strings.Repeat(" ", 25-len("Omschrijving")) +
-			" | " + "Verandering" + "\n"
-	} else if locale == "en-US" {
-		s = "Date" +
-			strings.Repeat(" ", 10-len("Date")) +
-			" | " +
-			"Description" +
-			strings.Repeat(" ", 25-len("Description")) +
-			" | " + "Change" + "\n"
+		s = "Datum      | Omschrijving              | Verandering\n"
 	} else {
-		return "", errors.New("")
+		s = "Date       | Description               | Change\n"
 	}
+
 	// Parallelism, always a great idea
-	co := make(chan struct {
-		i int
-		s string
-		e error
-	})
+	co := make(chan records)
 
 	for i, et := range entriesCopy {
 		go func(i int, entry Entry) {
-			if len(entry.Date) != 10 {
-				co <- struct {
-					i int
-					s string
-					e error
-				}{e: errors.New("")}
-			}
-
 			d1, d2, d3, d4, d5 := entry.Date[0:4], entry.Date[4], entry.Date[5:7], entry.Date[7], entry.Date[8:10]
-			if d2 != '-' || d4 != '-' {
-				co <- struct {
-					i int
-					s string
-					e error
-				}{e: errors.New("invalid date separator")}
+			if len(entry.Date) != 10 || d2 != '-' || d4 != '-' {
+				co <- records{e: errors.New("invalid date")}
 			}
 
 			de := entry.Description
