@@ -50,18 +50,21 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 	co := make(chan records)
 
 	for i, et := range entriesCopy {
+
 		go func(i int, entry Entry) {
 			d1, d2, d3, d4, d5 := entry.Date[0:4], entry.Date[4], entry.Date[5:7], entry.Date[7], entry.Date[8:10]
 			if len(entry.Date) != 10 || d2 != '-' || d4 != '-' {
 				co <- records{e: errors.New("invalid date")}
 			}
 
-			de := entry.Description
-			if len(de) > 25 {
-				de = de[:22] + "..."
+			//de := entry.Description
+			var de string
+			if len(entry.Description) > 25 {
+				de = entry.Description[:22] + "..."
 			} else {
-				de = de + strings.Repeat(" ", 25-len(de))
+				de = entry.Description + strings.Repeat(" ", 25-len(entry.Description))
 			}
+
 			var d string
 			if locale == "nl-NL" {
 				d = d5 + "-" + d3 + "-" + d1
@@ -81,11 +84,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				} else if currency == "USD" {
 					a += "$"
 				} else {
-					co <- struct {
-						i int
-						s string
-						e error
-					}{e: errors.New("")}
+					co <- records{e: errors.New("")}
 				}
 				a += " "
 				centsStr := strconv.Itoa(cents)
@@ -124,11 +123,7 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 				} else if currency == "USD" {
 					a += "$"
 				} else {
-					co <- struct {
-						i int
-						s string
-						e error
-					}{e: errors.New("")}
+					co <- records{e: errors.New("")}
 				}
 				centsStr := strconv.Itoa(cents)
 				switch len(centsStr) {
@@ -158,34 +153,29 @@ func FormatLedger(currency string, locale string, entries []Entry) (string, erro
 					a += " "
 				}
 			} else {
-				co <- struct {
-					i int
-					s string
-					e error
-				}{e: errors.New("")}
+				co <- records{e: errors.New("")}
 			}
 			var al int
 			for range a {
 				al++
 			}
-			co <- struct {
-				i int
-				s string
-				e error
-			}{i: i, s: d + strings.Repeat(" ", 10-len(d)) + " | " + de + " | " +
+			co <- records{i: i, s: d + strings.Repeat(" ", 10-len(d)) + " | " + de + " | " +
 				strings.Repeat(" ", 13-al) + a + "\n"}
 		}(i, et)
 	}
+
 	ss := make([]string, len(entriesCopy))
+
 	for range entriesCopy {
 		v := <-co
 		if v.e != nil {
 			return "", v.e
 		}
+
 		ss[v.i] = v.s
 	}
-	for i := 0; i < len(entriesCopy); i++ {
-		s += ss[i]
-	}
+
+	s += strings.Join(ss, "")
+
 	return s, nil
 }
