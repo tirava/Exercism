@@ -9,7 +9,7 @@ import (
 
 // Render translates markdown to HTML.
 func Render(markdown string) string {
-	var header, pos, list int
+	var header, list int
 
 	html := strings.Builder{}
 	html.Grow(len(markdown))
@@ -22,9 +22,11 @@ func Render(markdown string) string {
 	//r := strings.NewReplacer("__", "<strong>", "__", "</strong>", "_", "<em>", "_", "</em>")
 	//markdown = r.Replace(markdown)
 
-	for {
+	for pos := 0; pos < len(markdown); {
 		char := markdown[pos]
-		if char == '#' {
+
+		switch char {
+		case '#':
 			for char == '#' {
 				header++
 				pos++
@@ -32,18 +34,14 @@ func Render(markdown string) string {
 			}
 			html = *writeHeaderSuffix(&html, header, true)
 			pos++
-			continue
-		}
-		if char == '*' {
+		case '*':
 			if list == 0 {
 				html.WriteString("<ul>")
 			}
 			html.WriteString("<li>")
 			list++
 			pos += 2
-			continue
-		}
-		if char == '\n' {
+		case '\n':
 			if list > 0 {
 				html.WriteString("</li>")
 			}
@@ -52,13 +50,11 @@ func Render(markdown string) string {
 				header = 0
 			}
 			pos++
-			continue
+		default:
+			html.WriteByte(char)
+			pos++
 		}
-		html.WriteByte(char)
-		pos++
-		if pos >= len(markdown) {
-			break
-		}
+
 	}
 
 	switch {
@@ -80,7 +76,7 @@ func writeHeaderSuffix(sb *strings.Builder, header int, open bool) *strings.Buil
 	if !open {
 		sb.WriteByte('/')
 	}
-	sb.WriteString("h")
+	sb.WriteByte('h')
 	sb.WriteString(h)
 	sb.WriteByte('>')
 
