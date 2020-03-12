@@ -27,10 +27,9 @@ func Render(markdown string) string {
 
 		switch char {
 		case '#':
-			for char == '#' {
+			for ; char == '#'; char = markdown[pos] {
 				header++
 				pos++
-				char = markdown[pos]
 			}
 			html = *writeHeaderSuffix(&html, header, true)
 			pos++
@@ -38,6 +37,7 @@ func Render(markdown string) string {
 			if list == 0 {
 				html.WriteString("<ul>")
 			}
+
 			html.WriteString("<li>")
 			list++
 			pos += 2
@@ -45,10 +45,12 @@ func Render(markdown string) string {
 			if list > 0 {
 				html.WriteString("</li>")
 			}
+
 			if header > 0 {
 				html = *writeHeaderSuffix(&html, header, false)
 				header = 0
 			}
+
 			pos++
 		default:
 			html.WriteByte(char)
