@@ -3,14 +3,16 @@
 package markdown
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 )
 
 // Render translates markdown to HTML.
 func Render(markdown string) string {
 	var header, pos, list int
-	var html string
+
+	html := strings.Builder{}
+	html.Grow(len(markdown))
 
 	markdown = strings.Replace(markdown, "__", "<strong>", 1)
 	markdown = strings.Replace(markdown, "__", "</strong>", 1)
@@ -28,42 +30,59 @@ func Render(markdown string) string {
 				pos++
 				char = markdown[pos]
 			}
-			html += fmt.Sprintf("<h%d>", header)
+			html = *writeHeaderSuffix(&html, header, true)
 			pos++
 			continue
 		}
 		if char == '*' {
 			if list == 0 {
-				html += "<ul>"
+				html.WriteString("<ul>")
 			}
-			html += "<li>"
+			html.WriteString("<li>")
 			list++
 			pos += 2
 			continue
 		}
 		if char == '\n' {
 			if list > 0 {
-				html += "</li>"
+				html.WriteString("</li>")
 			}
 			if header > 0 {
-				html += fmt.Sprintf("</h%d>", header)
+				html = *writeHeaderSuffix(&html, header, false)
 				header = 0
 			}
 			pos++
 			continue
 		}
-		html += string(char)
+		html.WriteByte(char)
 		pos++
 		if pos >= len(markdown) {
 			break
 		}
 	}
-	if header > 0 {
-		return html + fmt.Sprintf("</h%d>", header)
-	}
-	if list > 0 {
-		return html + "</li></ul>"
-	}
-	return "<p>" + html + "</p>"
 
+	switch {
+	case header > 0:
+		html = *writeHeaderSuffix(&html, header, false)
+	case list > 0:
+		html.WriteString("</li></ul>")
+	default:
+		html.WriteString("</p>")
+		return "<p>" + html.String()
+	}
+
+	return html.String()
+}
+
+func writeHeaderSuffix(sb *strings.Builder, header int, open bool) *strings.Builder {
+	h := strconv.Itoa(header)
+	sb.WriteByte('<')
+	if !open {
+		sb.WriteByte('/')
+	}
+	sb.WriteString("h")
+	sb.WriteString(h)
+	sb.WriteByte('>')
+
+	return sb
 }
