@@ -1,8 +1,6 @@
 // Package change implements coins to be given to a customer.
 package change
 
-import "fmt"
-
 var result = make([][]int, 0)
 
 // Change returns coins.
@@ -11,7 +9,9 @@ func Change(cost []int, coin int) ([]int, error) {
 	minCount := 99999
 	N := len(cost)
 	count := make([]int, N)
+	out := make([]int, 0)
 
+	result = result[:0]
 	change(N-1, coin, count, cost)
 
 	for i, counts := range result {
@@ -26,9 +26,14 @@ func Change(cost []int, coin int) ([]int, error) {
 		}
 	}
 
-	fmt.Println(result[indexCount])
+	//fmt.Println(result[indexCount])
+	for k, v := range result[indexCount] {
+		for i := 0; i < v; i++ {
+			out = append(out, cost[k])
+		}
+	}
 
-	return count, nil
+	return out, nil
 }
 
 func change(maxcoin, sum int, count, cost []int) {
