@@ -18,17 +18,18 @@ func SpiralMatrix(in int) [][]int {
 
 	count := 1
 	for index := 0; index < in; index++ {
-		for i := index; i < len(result[0])-index*2; i++ {
+
+		for i := index; i < in-index; i++ {
 			result[index][i] = count
 			count++
 		}
 
-		for j := index + 1; j < len(result)-index*2; j++ {
+		for j := index + 1; j < in-index; j++ {
 			result[j][in-1-index] = count
 			count++
 		}
 
-		for i := len(result[0]) - 2 - index; i >= index; i-- {
+		for i := in - 2 - index; i >= index; i-- {
 			result[in-index-1][i] = count
 			count++
 		}
@@ -41,3 +42,26 @@ func SpiralMatrix(in int) [][]int {
 
 	return result
 }
+
+//package spiralmatrix
+//
+//// SpiralMatrix returns a spiral matrix of size n
+//func SpiralMatrix(n int) [][]int {
+//	m := make([][]int, n)
+//	for y := 0; y < n; y++ {
+//		m[y] = make([]int, n)
+//	}
+//
+//	x, y := 0, 0
+//	dx, dy := 1, 0
+//	for count := 1; count <= n*n; count++ {
+//		m[y][x] = count
+//		xx, yy := x+dx, y+dy
+//		if xx < 0 || xx >= n || yy < 0 || yy >= n || m[yy][xx] != 0 {
+//			dx, dy = -dy, dx
+//		}
+//		x, y = x+dx, y+dy
+//	}
+//
+//	return m
+//}
