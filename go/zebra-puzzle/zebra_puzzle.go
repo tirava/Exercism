@@ -67,20 +67,22 @@ func fact(n int) int {
 	}
 }
 
-//func permutation(index int, arr [num]int) [num]int {
-//	// var n=A.length;
-//	var i = index + 1
-//	var res = [num]int{}
-//
-//	for t := 1; t <= num; t++ {
-//		f := fact(num - t)
-//		k := int(math.Floor((float64(i + f - 1)) / float64(f)))
-//		res.push(arr.splice(k-1, 1)[0])
-//		i -= (k - 1) * f
-//	}
-//	res.push(arr[0])
-//	return res
-//}
+func permInt(index int) []int {
+	res := make([]int, 0, num)
+	source := make([]int, 0, num)
+
+	for _, pos := range positions {
+		source = append(source, pos)
+	}
+
+	for j := 0; j < num; j++ {
+		p := (index / fact(num-1-j)) % len(source)
+		res = append(res, source[p])
+		source = append(source[:p], source[p+1:]...)
+	}
+
+	return res
+}
 
 func generateHouses() {
 	var hh [num]house
@@ -99,38 +101,20 @@ func generateHouses() {
 	}
 
 	for i := 0; i < fact(num); i++ {
-		res := make([]int, 0, num)
-		source := make([]int, 0, num)
-		for _, pos := range positions {
-			source = append(source, pos)
-		}
-		for j := 0; j < num; j++ {
-			p := (i / fact(num-1-j)) % len(source)
-			res = append(res, source[p])
-			source = append(source[:p], source[p+1:]...)
+		res := permInt(i)
+		for i := range hh {
+			hh[i].position = res[i]
 		}
 
-		count++
-		fmt.Println(count, res)
+		if checkHouses(hh) {
+			count++
+			fmt.Println(count)
+			for _, h := range hh {
+				fmt.Println(h)
+			}
+			fmt.Println("-----------------")
+		}
 	}
-
-	//for i := 0; i < fact(num); i++ {
-	//	permutation(i, positions)
-	//}
-
-	//for _, pos := range positions {
-	//	hh[i].position = pos
-	//
-	//	if checkHouses(hh) {
-	//		count++
-	//		fmt.Println(count)
-	//		for _, h := range hh {
-	//			fmt.Println(h)
-	//		}
-	//		fmt.Println("-----------------")
-	//	}
-	//
-	//}
 
 	fmt.Println("Houses:", count)
 }
