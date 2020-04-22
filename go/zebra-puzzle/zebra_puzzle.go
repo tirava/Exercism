@@ -1,7 +1,9 @@
 // Package zebra implements zebra puzzle.
 package zebra
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Solution base type.
 type Solution struct {
@@ -26,7 +28,7 @@ var (
 	nationals = [...]string{"Englishman", "Spaniard", "Ukrainian", "Japanese", "Norwegian"}
 	smokes    = [...]string{"Parliaments", "Old Gold", "Kools", "Chesterfields", "Lucky Strike"}
 	drinks    = [...]string{"tea", "milk", "orange juice", "water", "coffee"}
-	animals   = [...]string{"zebra", "dog", "fox", "horse", "snails"}
+	animals   = [...]string{"snails", "fox", "dog", "horse", "zebra"}
 )
 
 var conditions = [...]house{ // 1. There are five houses.
@@ -46,132 +48,133 @@ var conditions = [...]house{ // 1. There are five houses.
 	// {position: n, color: "blue"}, {national: "Norwegian", position: n + 1}, // 15. The Norwegian lives next to the blue house.
 }
 
-func generateHouses() {
-	var h house
-
-	for _, col := range colors {
-		h.color = col
-		for _, nat := range nationals {
-			h.national = nat
-			for _, smo := range smokes {
-				h.smoke = smo
-				for _, dri := range drinks {
-					h.drink = dri
-					for _, ani := range animals {
-						h.animal = ani
-
-						var hh [num]house
-						for i, pos := range positions {
-							h.position = pos
-							hh[i] = h
-							//if h.animal != "zebra" || h.drink != "water" {
-							//	continue
-							//}
-						}
-
-						if checkHouses(hh) {
-							fmt.Println(hh)
-						}
-					}
-				}
-			}
-		}
+func fact(n int) int {
+	switch n {
+	case 5:
+		return 120
+	case 4:
+		return 24
+	case 3:
+		return 6
+	case 2:
+		return 2
+	case 1, 0:
+		return 1
+	default:
+		fmt.Println(n)
+		panic("no fact!")
+		//return -1
 	}
 }
 
-func checkHouses(hh [num]house) bool {
-	//for _, cond := range conditions {
-	//	//var count, condCount int
-	//	//
-	//	//if cond.position != 0 {
-	//	//	count++
-	//	//}
-	//	//if cond.color != "" {
-	//	//	count++
-	//	//}
-	//	//if cond.national != "" {
-	//	//	count++
-	//	//}
-	//	//if cond.smoke != "" {
-	//	//	count++
-	//	//}
-	//	//if cond.drink != "" {
-	//	//	count++
-	//	//}
-	//	//if cond.animal != "" {
-	//	//	count++
-	//	//}
-	//
-	//	if cond.position !=0 && cond.position  h.position {
-	//		condCount++
-	//	}
-	//	if cond.color == h.color {
-	//		condCount++
-	//	}
-	//	if cond.national == h.national {
-	//		condCount++
-	//	}
-	//	if cond.smoke == h.smoke {
-	//		condCount++
-	//	}
-	//	if cond.drink == h.drink {
-	//		condCount++
-	//	}
-	//	if cond.animal == h.animal {
-	//		condCount++
-	//	}
-	//
-	//	fmt.Println(count, condCount, h)
-	//	if count != condCount {
-	//		return false
-	//	}
+//func permutation(index int, arr [num]int) [num]int {
+//	// var n=A.length;
+//	var i = index + 1
+//	var res = [num]int{}
+//
+//	for t := 1; t <= num; t++ {
+//		f := fact(num - t)
+//		k := int(math.Floor((float64(i + f - 1)) / float64(f)))
+//		res.push(arr.splice(k-1, 1)[0])
+//		i -= (k - 1) * f
+//	}
+//	res.push(arr[0])
+//	return res
+//}
+
+func generateHouses() {
+	var hh [num]house
+
+	var count int
+
+	for i := range positions {
+		hh[i] = house{
+			position: positions[i],
+			color:    colors[i],
+			national: nationals[i],
+			smoke:    smokes[i],
+			drink:    drinks[i],
+			animal:   animals[i],
+		}
+	}
+
+	for i := 0; i < fact(num); i++ {
+		res := make([]int, 0, num)
+		source := make([]int, 0, num)
+		for _, pos := range positions {
+			source = append(source, pos)
+		}
+		for j := 0; j < num; j++ {
+			p := (i / fact(num-1-j)) % len(source)
+			res = append(res, source[p])
+			source = append(source[:p], source[p+1:]...)
+		}
+
+		count++
+		fmt.Println(count, res)
+	}
+
+	//for i := 0; i < fact(num); i++ {
+	//	permutation(i, positions)
 	//}
 
-	return true
+	//for _, pos := range positions {
+	//	hh[i].position = pos
+	//
+	//	if checkHouses(hh) {
+	//		count++
+	//		fmt.Println(count)
+	//		for _, h := range hh {
+	//			fmt.Println(h)
+	//		}
+	//		fmt.Println("-----------------")
+	//	}
+	//
+	//}
+
+	fmt.Println("Houses:", count)
+}
+
+func checkHouses(hh [num]house) bool {
+	var c2, c3, c4, c5, cx, cy, cz int
+
+	for _, h := range hh {
+		if h.national == "Englishman" && h.color == "red" {
+			c2++
+		}
+		if h.national == "Spaniard" && h.animal == "dog" {
+			c3++
+		}
+		if h.color == "green" && h.drink == "coffee" {
+			c4++
+		}
+		if h.national == "Ukrainian" && h.drink == "tea" {
+			c5++
+		}
+
+		if h.national == "Norwegian" && h.drink == "water" {
+			cx++
+		}
+		if h.national == "Japanese" && h.animal == "zebra" { //&& h.position == 5 {
+			cy++
+		}
+
+		if h.position == 1 && h.national == "Norwegian" && h.drink == "water" &&
+			h.color == "yellow" && h.animal == "fox" && h.smoke == "Kools" {
+			cz++
+		}
+	}
+
+	//fmt.Println(c2, c3, c4, c5)
+	//return c2 == 1 && c3 == 1 && c4 == 1 && c5 == 1
+	//return c5 == 1 && c4 == 1 && c3 == 1
+	//return cx > 0 && cy > 0 //&& c2 > 0 && c3 > 0
+	return true //cz > 0 && cy > 0
 }
 
 // SolvePuzzle solves puzzle.
 func SolvePuzzle() Solution {
 	generateHouses()
-	// 1. There are five houses.
-	//houses := make([]house, 5)
-
-	// 2. The Englishman lives in the red house.
-	//houses[1].national = "Englishman"
-	//houses[1].color = "red"
-
-	// 3. The Spaniard owns the dog.
-	//houses[3].national = "Spaniard"
-	//houses[3].animal = "dog"
-
-	// 4.
-
-	// 5. The Ukrainian drinks tea.
-	//houses[4].national = "Ukrainian"
-	//houses[4].drink = "tea"
-
-	// 9. Milk is drunk in the middle house.
-	// 14. The Japanese smokes Parliaments.
-	//houses[2].position = 3
-	//houses[2].drink = "milk"
-	//houses[2].national = "Japanese"
-	//houses[2].smoke = "Parliaments"
-
-	// 10. The Norwegian lives in the first house.
-	//houses[0].position = 1
-	//houses[0].national = "Norwegian"
-
-	// 15. The Norwegian lives next to the blue house.
-	//houses[34].position = 2
-	//houses[34].color = "blue"
-
-	//sort.Slice(houses, func(i, j int) bool {
-	//	return houses[i].position < houses[j].position
-	//})
-
-	//for _, h := range houses {
-	//	fmt.Printf("%+v\n", h)
-	//}
 
 	return Solution{}
 }
