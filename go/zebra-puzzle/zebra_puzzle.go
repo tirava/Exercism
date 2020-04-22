@@ -67,11 +67,28 @@ func fact(n int) int {
 	}
 }
 
-func permInt(index int) []int {
+func permInt(index int, src [num]int) []int {
 	res := make([]int, 0, num)
 	source := make([]int, 0, num)
 
-	for _, pos := range positions {
+	for _, pos := range src {
+		source = append(source, pos)
+	}
+
+	for j := 0; j < num; j++ {
+		p := (index / fact(num-1-j)) % len(source)
+		res = append(res, source[p])
+		source = append(source[:p], source[p+1:]...)
+	}
+
+	return res
+}
+
+func permStr(index int, src [num]string) []string {
+	res := make([]string, 0, num)
+	source := make([]string, 0, num)
+
+	for _, pos := range src {
 		source = append(source, pos)
 	}
 
@@ -86,8 +103,8 @@ func permInt(index int) []int {
 
 func generateHouses() {
 	var hh [num]house
-
 	var count int
+	var count64 uint64
 
 	for i := range positions {
 		hh[i] = house{
@@ -101,22 +118,70 @@ func generateHouses() {
 	}
 
 	for i := 0; i < fact(num); i++ {
-		res := permInt(i)
+		res := permInt(i, positions)
 		for i := range hh {
 			hh[i].position = res[i]
 		}
 
-		if checkHouses(hh) {
-			count++
-			fmt.Println(count)
-			for _, h := range hh {
-				fmt.Println(h)
+		for i := 0; i < fact(num); i++ {
+			res := permStr(i, colors)
+			for i := range hh {
+				hh[i].color = res[i]
 			}
-			fmt.Println("-----------------")
+
+			for i := 0; i < fact(num); i++ {
+				res := permStr(i, nationals)
+				for i := range hh {
+					hh[i].national = res[i]
+				}
+
+				for i := 0; i < fact(num); i++ {
+					res := permStr(i, smokes)
+					for i := range hh {
+						hh[i].smoke = res[i]
+					}
+
+					for i := 0; i < fact(num); i++ {
+						res := permStr(i, drinks)
+						for i := range hh {
+							hh[i].drink = res[i]
+						}
+
+						for i := 0; i < fact(num); i++ {
+							res := permStr(i, animals)
+							for i := range hh {
+								hh[i].animal = res[i]
+							}
+
+							count64++
+							spinner(count64)
+
+							if checkHouses(hh) {
+								count++
+								fmt.Println(count)
+								for _, h := range hh {
+									fmt.Println(h)
+								}
+								fmt.Println("-----------------")
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
 	fmt.Println("Houses:", count)
+}
+
+func spinner(count uint64) {
+	//for {
+	//	for _, r := range "-\\|/" {
+	//		fmt.Printf("%c\r", r)
+	//		time.Sleep(delay)
+	//	}
+	//}
+	fmt.Printf("%d of %d\r", count, 120*120*120*120*120*120)
 }
 
 func checkHouses(hh [num]house) bool {
@@ -153,7 +218,7 @@ func checkHouses(hh [num]house) bool {
 	//return c2 == 1 && c3 == 1 && c4 == 1 && c5 == 1
 	//return c5 == 1 && c4 == 1 && c3 == 1
 	//return cx > 0 && cy > 0 //&& c2 > 0 && c3 > 0
-	return true //cz > 0 && cy > 0
+	return cz > 0 //&& cy > 0
 }
 
 // SolvePuzzle solves puzzle.
