@@ -101,7 +101,7 @@ func permStr(index int, src [num]string) []string {
 	return res
 }
 
-func generateHouses() {
+func generateHouses() Solution {
 	var hh [num]house
 	var count int
 	var count64 uint64
@@ -172,6 +172,23 @@ func generateHouses() {
 	}
 
 	fmt.Println("Houses:", count)
+
+	return getSolution(hh)
+}
+
+func getSolution(hh [num]house) Solution {
+	var sol Solution
+
+	for _, h := range hh {
+		if h.drink == "water" {
+			sol.DrinksWater = h.national
+		}
+		if h.animal == "zebra" {
+			sol.OwnsZebra = h.national
+		}
+	}
+
+	return sol
 }
 
 func checkHouses(hh [num]house) bool {
@@ -236,7 +253,5 @@ func checkHouses(hh [num]house) bool {
 
 // SolvePuzzle solves puzzle.
 func SolvePuzzle() Solution {
-	generateHouses()
-
-	return Solution{}
+	return generateHouses() //Solution{DrinksWater: "Norwegian", OwnsZebra: "Japanese"}
 }
