@@ -1,8 +1,6 @@
 // Package dominoes implements making a chain of dominoes.
 package dominoes
 
-import "fmt"
-
 // Domino base type.
 type Domino [2]int
 
@@ -35,15 +33,9 @@ func MakeChain(input []Domino) (chain []Domino, ok bool) {
 
 		if found {
 			chain = append(chain, revert)
-			//fmt.Println("aaaaaaaaaaa", "chain:", chain)
 			in = append(in[:i], in[i+1:]...)
 			j++
-			//fmt.Println("jjjjjjjjjjjjj", j)
-			i -= 2
-			if i < 0 {
-				i = 0
-			}
-			//fmt.Println("iiiiiiiiiii", in, i)
+			i = 0
 		}
 
 		if len(in) > 1 {
@@ -57,9 +49,6 @@ func MakeChain(input []Domino) (chain []Domino, ok bool) {
 			}
 		}
 	}
-
-	fmt.Println("chain:", chain)
-	fmt.Println("in:", in)
 
 	if chain[0][0] == chain[len(chain)-1][1] && len(in) == 1 {
 		return chain, true
