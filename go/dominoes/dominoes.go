@@ -20,27 +20,38 @@ func MakeChain(input []Domino) (chain []Domino, ok bool) {
 
 	var j int
 
-	for i := 1; i < len(input); i++ {
+	for i := 1; i < len(in); i++ {
 		var found bool
 		var revert Domino
 
-		if chain[j][1] == input[i][0] {
-			revert = input[i]
+		if chain[j][1] == in[i][0] {
+			revert = in[i]
 			found = true
-		} else if chain[j][1] == input[i][1] {
-			revert = input[i]
+		} else if chain[j][1] == in[i][1] {
+			revert = in[i]
 			revert[0], revert[1] = revert[1], revert[0]
 			found = true
 		}
 
 		if found {
 			chain = append(chain, revert)
+			fmt.Println("aaaaaaaaaaa", "chain:", chain)
 			in = append(in[:i], in[i+1:]...)
 			j++
+			fmt.Println("jjjjjjjjjjjjj", j)
+			i -= 2
+			if i < 0 {
+				i = 0
+			}
+			fmt.Println("iiiiiiiiiii", in, i)
 		}
 
-		if i == len(input)-1 && len(in) > 1 {
-			i = 0
+		if len(in) > 1 {
+			if !isDigitInDomino(in, chain[len(chain)-1][1]) {
+				return nil, false
+			}
+
+			//i = 0
 		}
 	}
 
@@ -52,4 +63,14 @@ func MakeChain(input []Domino) (chain []Domino, ok bool) {
 	}
 
 	return nil, false
+}
+
+func isDigitInDomino(in []Domino, digit int) bool {
+	for i := 1; i < len(in); i++ {
+		if in[i][0] == digit || in[i][1] == digit {
+			return true
+		}
+	}
+
+	return false
 }
