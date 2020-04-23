@@ -35,30 +35,33 @@ func MakeChain(input []Domino) (chain []Domino, ok bool) {
 
 		if found {
 			chain = append(chain, revert)
-			fmt.Println("aaaaaaaaaaa", "chain:", chain)
+			//fmt.Println("aaaaaaaaaaa", "chain:", chain)
 			in = append(in[:i], in[i+1:]...)
 			j++
-			fmt.Println("jjjjjjjjjjjjj", j)
+			//fmt.Println("jjjjjjjjjjjjj", j)
 			i -= 2
 			if i < 0 {
 				i = 0
 			}
-			fmt.Println("iiiiiiiiiii", in, i)
+			//fmt.Println("iiiiiiiiiii", in, i)
 		}
 
 		if len(in) > 1 {
 			if !isDigitInDomino(in, chain[len(chain)-1][1]) {
-				return nil, false
-			}
+				if chain[0][0] != chain[len(chain)-1][1] {
+					return nil, false
+				}
 
-			//i = 0
+				chain = append(chain, chain[0])
+				chain = chain[1:]
+			}
 		}
 	}
 
 	fmt.Println("chain:", chain)
 	fmt.Println("in:", in)
 
-	if chain[0][0] == chain[len(chain)-1][1] {
+	if chain[0][0] == chain[len(chain)-1][1] && len(in) == 1 {
 		return chain, true
 	}
 
