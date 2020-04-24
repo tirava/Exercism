@@ -3,11 +3,16 @@ package alphametics
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 )
 
 var f10 = fact(10)
+
+type result struct {
+	hash  map[string]int
+	zero  bool
+	found bool
+}
 
 // Solve solves alphametics puzzles.
 func Solve(puzzle string) (map[string]int, error) {
@@ -41,65 +46,58 @@ func Solve(puzzle string) (map[string]int, error) {
 		slice = append(slice, "_")
 	}
 
-	//var permSlice []string
-	//var zero bool
+	result := worker(hash, slice, ops, res)
 
-	//LOOP:
-	//	for i := 0; i < f10; i++ {
-	//		permSlice = permStr(i, slice)
-	//
-	//		var sumOps int
-	//		for _, op := range ops {
-	//			sumOps += getNumber(permSlice, op)
-	//		}
-	//
-	//		sumRes := getNumber(permSlice, res)
-	//
-	//		if sumOps == sumRes {
-	//
-	//			for i, s := range permSlice {
-	//				if s == "_" {
-	//					continue
-	//				}
-	//
-	//				hash[s] = i
-	//			}
-	//
-	//			if hash[res[0:1]] == 0 {
-	//				zero = true
-	//				continue
-	//			}
-	//
-	//			for _, op := range ops {
-	//				if hash[op[0:1]] == 0 {
-	//					zero = true
-	//					continue LOOP
-	//				}
-	//			}
-	//
-	//			zero = false
-	//
-	//			fmt.Println(i, permSlice, "sumRes:", sumRes, "sumOps:", sumOps)
-	//			break
-	//		}
-	//
-	//		fmt.Printf("%d of %d\r", i, f10)
-	//	}
-
-	hash, zero := worker(hash, slice, ops, res)
-
-	if zero {
+	if result.zero {
 		return nil, errors.New("no leading zero")
 	}
 
-	return hash, nil
+	return result.hash, nil
 }
 
-func worker(hash map[string]int, slice, ops []string, res string) (map[string]int, bool) {
-	var zero bool
+func worker(hash map[string]int, slice, ops []string, res string) result {
+	ch := make(chan result, 8)
+
+	//result1 := job(0, f10/2, hash, slice, ops, res)
+	//result2 := job(f10/2, f10, hash, slice, ops, res)
+	go job(0, f10/8, hash, slice, ops, res, ch, 1)
+	go job(f10/8+1, f10*2/8, hash, slice, ops, res, ch, 2)
+	go job(f10*2/8+1, f10*3/8, hash, slice, ops, res, ch, 3)
+	go job(f10*3/8+1, f10*4/8, hash, slice, ops, res, ch, 4)
+	go job(f10*4/8+1, f10*5/8, hash, slice, ops, res, ch, 5)
+	go job(f10*5/8+1, f10*6/8, hash, slice, ops, res, ch, 6)
+	go job(f10*6/8+1, f10*7/8, hash, slice, ops, res, ch, 7)
+	go job(f10*7/8+1, f10, hash, slice, ops, res, ch, 8)
+
+	result := result{}
+
+	for r := range ch {
+		if r.found {
+			result.hash = r.hash
+			return result
+		}
+		if r.zero {
+			result.zero = true
+			return result
+		}
+	}
+
+	return result
+}
+
+func job(index1, index2 int, hash map[string]int, slice, ops []string, res string, ch chan result, num int) {
+	var result result
+
+	result.hash = make(map[string]int, len(hash))
+
+	for k, v := range hash {
+		result.hash[k] = v
+	}
+
+	//fmt.Println("job:", num, "from:", index1, "to:", index2)
 
 LOOP:
-	for i := 0; i < f10; i++ {
+	for i := index1; i < index2; i++ {
 		permSlice := permStr(i, slice)
 
 		var sumOps int
@@ -116,31 +114,32 @@ LOOP:
 					continue
 				}
 
-				hash[s] = i
+				result.hash[s] = i
 			}
 
-			if hash[res[0:1]] == 0 {
-				zero = true
+			if result.hash[res[0:1]] == 0 {
+				result.zero = true
 				continue
 			}
 
 			for _, op := range ops {
-				if hash[op[0:1]] == 0 {
-					zero = true
+				if result.hash[op[0:1]] == 0 {
+					result.zero = true
 					continue LOOP
 				}
 			}
 
-			zero = false
+			result.zero = false
+			result.found = true
 
-			fmt.Println(i, permSlice, "sumRes:", sumRes, "sumOps:", sumOps)
-			break
+			//fmt.Println("job:", num, i, permSlice, "sumRes:", sumRes, "sumOps:", sumOps)
+			break LOOP
 		}
 
-		fmt.Printf("%d of %d\r", i, f10)
+		//fmt.Printf("%d: %d of %d\r", num, i, f10)
 	}
 
-	return hash, zero
+	ch <- result
 }
 
 func getNumber(slice []string, str string) int {
