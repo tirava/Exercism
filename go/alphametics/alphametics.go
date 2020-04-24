@@ -3,14 +3,17 @@ package alphametics
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
+
+var f10 = fact(10)
 
 // Solve solves alphametics puzzles.
 func Solve(puzzle string) (map[string]int, error) {
 	hash := make(map[string]int)
 	slice := make([]string, 0, 10)
-	f10 := fact(10)
+	//f10 := fact(10)
 
 	sep := strings.Split(puzzle, "==")
 	ops := strings.Split(sep[0], "+")
@@ -38,12 +41,66 @@ func Solve(puzzle string) (map[string]int, error) {
 		slice = append(slice, "_")
 	}
 
-	var permSlice []string
+	//var permSlice []string
+	//var zero bool
+
+	//LOOP:
+	//	for i := 0; i < f10; i++ {
+	//		permSlice = permStr(i, slice)
+	//
+	//		var sumOps int
+	//		for _, op := range ops {
+	//			sumOps += getNumber(permSlice, op)
+	//		}
+	//
+	//		sumRes := getNumber(permSlice, res)
+	//
+	//		if sumOps == sumRes {
+	//
+	//			for i, s := range permSlice {
+	//				if s == "_" {
+	//					continue
+	//				}
+	//
+	//				hash[s] = i
+	//			}
+	//
+	//			if hash[res[0:1]] == 0 {
+	//				zero = true
+	//				continue
+	//			}
+	//
+	//			for _, op := range ops {
+	//				if hash[op[0:1]] == 0 {
+	//					zero = true
+	//					continue LOOP
+	//				}
+	//			}
+	//
+	//			zero = false
+	//
+	//			fmt.Println(i, permSlice, "sumRes:", sumRes, "sumOps:", sumOps)
+	//			break
+	//		}
+	//
+	//		fmt.Printf("%d of %d\r", i, f10)
+	//	}
+
+	hash, zero := worker(hash, slice, ops, res)
+
+	if zero {
+		return nil, errors.New("no leading zero")
+	}
+
+	return hash, nil
+}
+
+func worker(hash map[string]int, slice, ops []string, res string) (map[string]int, bool) {
 	var zero bool
 
 LOOP:
 	for i := 0; i < f10; i++ {
-		permSlice = permStr(i, slice)
+		permSlice := permStr(i, slice)
 
 		var sumOps int
 		for _, op := range ops {
@@ -76,18 +133,14 @@ LOOP:
 
 			zero = false
 
-			//fmt.Println(i, permSlice, "sumRes:", sumRes, "sumOps:", sumOps)
+			fmt.Println(i, permSlice, "sumRes:", sumRes, "sumOps:", sumOps)
 			break
 		}
 
-		//fmt.Printf("%d of %d\r", i, f10)
+		fmt.Printf("%d of %d\r", i, f10)
 	}
 
-	if zero {
-		return nil, errors.New("no leading zero")
-	}
-
-	return hash, nil
+	return hash, zero
 }
 
 func getNumber(slice []string, str string) int {

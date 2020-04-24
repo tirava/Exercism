@@ -25,10 +25,10 @@ func TestSolve(t *testing.T) {
 	}
 }
 
-func BenchmarkSolve(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		for _, tc := range testCases {
-			Solve(tc.input)
-		}
-	}
-}
+//func BenchmarkSolve(b *testing.B) {
+//	for i := 0; i < b.N; i++ {
+//		for _, tc := range testCases {
+//			Solve(tc.input)
+//		}
+//	}
+//}
