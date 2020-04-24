@@ -8,6 +8,9 @@ import (
 
 // Solve solves alphametics puzzles.
 func Solve(puzzle string) (map[string]int, error) {
+	hash := make(map[string]int)
+	slice := make([]string, 0, len(puzzle))
+
 	sep := strings.Split(puzzle, "==")
 	ops := strings.Split(sep[0], "+")
 
@@ -15,7 +18,66 @@ func Solve(puzzle string) (map[string]int, error) {
 	op2 := strings.TrimSpace(ops[1])
 	res := strings.TrimSpace(sep[1])
 
-	fmt.Println(sep, ops, op1, op2, res)
+	for i, s := range op1 + op2 + res {
+		if _, ok := hash[string(s)]; !ok {
+			hash[string(s)] = i
+			slice = append(slice, string(s))
+		}
+	}
+
+	for len(slice) < 10 {
+		slice = append(slice, "_")
+	}
+
+	for i := 0; i < fact(len(slice)); i++ {
+		permSlice := permStr(i, slice)
+
+		num1 := getNumber(permSlice, op1)
+		num2 := getNumber(permSlice, op2)
+		sum3 := getNumber(permSlice, res)
+		sum := num1 + num2
+
+		fmt.Println(i, permSlice, "num1:", num1, "num2:", num2, "sum3:", sum3, "real sum:", sum)
+	}
 
 	return nil, nil
+}
+
+func getNumber(slice []string, str string) int {
+	var res int
+
+	for _, s := range str {
+		for k, v := range slice {
+			if v == string(s) {
+				res = res*10 + k
+			}
+		}
+	}
+
+	return res
+}
+
+func permStr(index int, src []string) []string {
+	res := make([]string, 0, len(src))
+	source := make([]string, 0, len(src))
+
+	for _, pos := range src {
+		source = append(source, pos)
+	}
+
+	for j := 0; j < len(src); j++ {
+		p := (index / fact(len(src)-1-j)) % len(source)
+		res = append(res, source[p])
+		source = append(source[:p], source[p+1:]...)
+	}
+
+	return res
+}
+
+func fact(n int) int {
+	if n == 0 {
+		return 1
+	}
+
+	return n * fact(n-1)
 }
