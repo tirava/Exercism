@@ -3,7 +3,6 @@ package alphametics
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -20,11 +19,15 @@ func Solve(puzzle string) (map[string]int, error) {
 		return nil, errors.New("need 2+ operands")
 	}
 
-	op1 := strings.TrimSpace(ops[0])
-	op2 := strings.TrimSpace(ops[1])
 	res := strings.TrimSpace(sep[1])
 
-	for i, s := range op1 + op2 + res {
+	for i, op := range ops {
+		ops[i] = strings.TrimSpace(op)
+	}
+
+	allString := strings.Join(ops, "") + res
+
+	for i, s := range allString {
 		if _, ok := hash[string(s)]; !ok {
 			hash[string(s)] = i
 			slice = append(slice, string(s))
@@ -36,28 +39,52 @@ func Solve(puzzle string) (map[string]int, error) {
 	}
 
 	var permSlice []string
+	var zero bool
+
+LOOP:
 	for i := 0; i < f10; i++ {
 		permSlice = permStr(i, slice)
 
-		num1 := getNumber(permSlice, op1)
-		num2 := getNumber(permSlice, op2)
-		sum3 := getNumber(permSlice, res)
-		sum := num1 + num2
+		var sumOps int
+		for _, op := range ops {
+			sumOps += getNumber(permSlice, op)
+		}
 
-		if sum3 == sum {
-			fmt.Println(i, permSlice, "num1:", num1, "num2:", num2, "sum3:", sum3, "real sum:", sum)
+		sumRes := getNumber(permSlice, res)
+
+		if sumOps == sumRes {
+
+			for i, s := range permSlice {
+				if s == "_" {
+					continue
+				}
+
+				hash[s] = i
+			}
+
+			if hash[res[0:1]] == 0 {
+				zero = true
+				continue
+			}
+
+			for _, op := range ops {
+				if hash[op[0:1]] == 0 {
+					zero = true
+					continue LOOP
+				}
+			}
+
+			zero = false
+
+			//fmt.Println(i, permSlice, "sumRes:", sumRes, "sumOps:", sumOps)
 			break
 		}
 
-		fmt.Printf("%d of %d\r", i, f10)
+		//fmt.Printf("%d of %d\r", i, f10)
 	}
 
-	for i, s := range permSlice {
-		if s == "_" {
-			continue
-		}
-
-		hash[s] = i
+	if zero {
+		return nil, errors.New("no leading zero")
 	}
 
 	return hash, nil
