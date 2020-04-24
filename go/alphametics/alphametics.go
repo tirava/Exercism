@@ -2,6 +2,7 @@
 package alphametics
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -9,10 +10,15 @@ import (
 // Solve solves alphametics puzzles.
 func Solve(puzzle string) (map[string]int, error) {
 	hash := make(map[string]int)
-	slice := make([]string, 0, len(puzzle))
+	slice := make([]string, 0, 10)
+	f10 := fact(10)
 
 	sep := strings.Split(puzzle, "==")
 	ops := strings.Split(sep[0], "+")
+
+	if len(ops) < 2 {
+		return nil, errors.New("need 2+ operands")
+	}
 
 	op1 := strings.TrimSpace(ops[0])
 	op2 := strings.TrimSpace(ops[1])
@@ -29,18 +35,32 @@ func Solve(puzzle string) (map[string]int, error) {
 		slice = append(slice, "_")
 	}
 
-	for i := 0; i < fact(len(slice)); i++ {
-		permSlice := permStr(i, slice)
+	var permSlice []string
+	for i := 0; i < f10; i++ {
+		permSlice = permStr(i, slice)
 
 		num1 := getNumber(permSlice, op1)
 		num2 := getNumber(permSlice, op2)
 		sum3 := getNumber(permSlice, res)
 		sum := num1 + num2
 
-		fmt.Println(i, permSlice, "num1:", num1, "num2:", num2, "sum3:", sum3, "real sum:", sum)
+		if sum3 == sum {
+			fmt.Println(i, permSlice, "num1:", num1, "num2:", num2, "sum3:", sum3, "real sum:", sum)
+			break
+		}
+
+		fmt.Printf("%d of %d\r", i, f10)
 	}
 
-	return nil, nil
+	for i, s := range permSlice {
+		if s == "_" {
+			continue
+		}
+
+		hash[s] = i
+	}
+
+	return hash, nil
 }
 
 func getNumber(slice []string, str string) int {
