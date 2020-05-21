@@ -3,7 +3,9 @@
 //by strategically transferring liters of fluid between the buckets.
 package twobucket
 
-import "errors"
+import (
+	"errors"
+)
 
 type bucket struct {
 	size int
@@ -17,6 +19,7 @@ var steps int
 func Solve(sizeBucketOne, sizeBucketTwo, goalAmount int, startBucket string) (
 	goalBucket string, numSteps, otherBucketLevel int, e error) {
 
+	steps = 0
 	b1 := bucket{size: sizeBucketOne, goal: goalAmount}
 	b2 := bucket{size: sizeBucketTwo, goal: goalAmount}
 
@@ -30,13 +33,14 @@ func Solve(sizeBucketOne, sizeBucketTwo, goalAmount int, startBucket string) (
 func smallFirst(b1, b2 bucket) (
 	goalBucket string, numSteps, otherBucketLevel int, e error) {
 
-	// fill small
-	if b1.fill() {
-		return "one", steps, b2.now, nil
-	}
-
 	// pure to big while big not full
-	for b2.now == b2.size {
+	for b2.now != b2.size {
+		// fill small
+		if b1.fill() {
+			return "one", steps, b2.now, nil
+		}
+
+		// pure to big
 		g1, g2 := b1.pure(&b2)
 		if g1 {
 			return "one", steps, b2.now, nil
@@ -46,15 +50,15 @@ func smallFirst(b1, b2 bucket) (
 	}
 
 	// empty big
-	b2.empty()
+	//b2.empty()
 
 	// pure to big
-	g1, g2 := b1.pure(&b2)
-	if g1 {
-		return "one", steps, b2.now, nil
-	} else if g2 {
-		return "two", steps, b1.now, nil
-	}
+	//b1.pure(&b2)
+	//if g1 {
+	//	return "one", steps, b2.now, nil
+	//} else if g2 {
+	//	return "two", steps, b1.now, nil
+	//}
 
 	return "", 0, 0, errors.New("todo smallFirst")
 }
@@ -63,9 +67,23 @@ func bigFirst(b1, b2 bucket) (
 	goalBucket string, numSteps, otherBucketLevel int, e error) {
 
 	// fill big
-	// pure to small + empty small while big not empty
+	if b2.fill() {
+		return "two", steps, b1.now, nil
+	}
 
-	return "", 0, 0, nil
+	// pure to small + empty small while big not empty
+	for b2.now != 0 {
+		g1, g2 := b2.pure(&b1)
+		if g1 {
+			return "one", steps, b2.now, nil
+		} else if g2 {
+			return "two", steps, b1.now, nil
+		}
+
+		b1.empty()
+	}
+
+	return "", 0, 0, errors.New("todo bigFirst")
 }
 
 func (b *bucket) fill() bool {
