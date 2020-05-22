@@ -20,7 +20,7 @@ func Search(pattern string, flags, files []string) []string {
 
 		lines := strings.Split(string(content), "\n")
 		var (
-			lineNum                       string
+			fileNum, lineNum              string
 			fileNames, entireLine, invert bool
 		)
 
@@ -42,12 +42,26 @@ func Search(pattern string, flags, files []string) []string {
 				}
 			}
 
+			if len(files) > 1 {
+				fileNum = file + ":"
+			}
+
 			if strings.Contains(line, pattern) {
 				if fileNames {
-					result = append(result, file)
+					var found bool
+					for r := range result {
+						if result[r] == file {
+							found = true
+							break
+						}
+					}
+					if !found {
+						result = append(result, file)
+					}
+					//fmt.Println(result, line)
 				} else if entireLine && !invert {
 					if line == pattern {
-						result = append(result, lineNum+lines[i])
+						result = append(result, fileNum+lineNum+lines[i])
 					}
 				} else if invert {
 					for ii := range lines {
@@ -55,14 +69,12 @@ func Search(pattern string, flags, files []string) []string {
 							continue
 						}
 						if !strings.Contains(lines[ii], pattern) {
-							result = append(result, lineNum+lines[ii])
-							//fmt.Println([]byte(lineNum+lines[ii]))
+							result = append(result, fileNum+lineNum+lines[ii])
 						}
 					}
-					//fmt.Println(len(result))
 					break
 				} else {
-					result = append(result, lineNum+lines[i])
+					result = append(result, fileNum+lineNum+lines[i])
 				}
 			}
 		}
