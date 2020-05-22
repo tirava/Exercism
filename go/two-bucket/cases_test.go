@@ -39,6 +39,6 @@ var testCases = []bucketTestCase{
 	},
 	{
 		"Measure using bucket one of size 2 and bucket two of size 3 - start with bucket one and end with bucket two",
-		2, 3, 3, "one", "two", 2, 2, false,
+		2, 3, 3, "one", "two", 4, 1, false,
 	},
 }
