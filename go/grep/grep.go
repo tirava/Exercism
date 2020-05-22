@@ -16,7 +16,6 @@ func Search(pattern string, flags, files []string) []string {
 		f, _ := os.Open(file)
 		content, _ := ioutil.ReadAll(f)
 		f.Close()
-		//fmt.Println(string(content))
 
 		lines := strings.Split(string(content), "\n")
 		var (
@@ -46,7 +45,7 @@ func Search(pattern string, flags, files []string) []string {
 				fileNum = file + ":"
 			}
 
-			if strings.Contains(line, pattern) {
+			if strings.Contains(line, pattern) || invert {
 				if fileNames {
 					var found bool
 					for r := range result {
@@ -58,7 +57,6 @@ func Search(pattern string, flags, files []string) []string {
 					if !found {
 						result = append(result, file)
 					}
-					//fmt.Println(result, line)
 				} else if entireLine && !invert {
 					if line == pattern {
 						result = append(result, fileNum+lineNum+lines[i])
@@ -82,9 +80,3 @@ func Search(pattern string, flags, files []string) []string {
 
 	return result
 }
-
-//-n Print the line numbers of each matching line.
-//-l Print only the names of files that contain at least one matching line.
-//-i Match line using a case-insensitive comparison.
-//-v Invert the program -- collect all lines that fail to match the pattern.
-//-x Only match entire lines, instead of lines that contain a match.
