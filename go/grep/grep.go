@@ -4,6 +4,7 @@ package grep
 import (
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -18,9 +19,28 @@ func Search(pattern string, flags, files []string) []string {
 		//fmt.Println(string(content))
 
 		lines := strings.Split(string(content), "\n")
+		var lineNum string
+		var fileNames bool
+
 		for i := range lines {
-			if strings.Contains(lines[i], pattern) {
-				result = append(result, lines[i])
+			line := lines[i]
+			for j := range flags {
+				switch flags[j] {
+				case "-n":
+					lineNum = strconv.Itoa(i+1) + ":"
+				case "-i":
+					pattern = strings.ToLower(pattern)
+					line = strings.ToLower(lines[i])
+				case "-l":
+					fileNames = true
+				}
+			}
+			if strings.Contains(line, pattern) {
+				if fileNames {
+					result = append(result, file)
+				} else {
+					result = append(result, lineNum+lines[i])
+				}
 			}
 		}
 	}
