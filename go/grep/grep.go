@@ -10,7 +10,7 @@ import (
 
 // Search returns found strings.
 func Search(pattern string, flags, files []string) []string {
-	var result []string
+	result := make([]string, 0)
 
 	for _, file := range files {
 		f, _ := os.Open(file)
@@ -19,8 +19,10 @@ func Search(pattern string, flags, files []string) []string {
 		//fmt.Println(string(content))
 
 		lines := strings.Split(string(content), "\n")
-		var lineNum string
-		var fileNames bool
+		var (
+			lineNum                       string
+			fileNames, entireLine, invert bool
+		)
 
 		for i := range lines {
 			line := lines[i]
@@ -33,11 +35,32 @@ func Search(pattern string, flags, files []string) []string {
 					line = strings.ToLower(lines[i])
 				case "-l":
 					fileNames = true
+				case "-x":
+					entireLine = true
+				case "-v":
+					invert = true
 				}
 			}
+
 			if strings.Contains(line, pattern) {
 				if fileNames {
 					result = append(result, file)
+				} else if entireLine && !invert {
+					if line == pattern {
+						result = append(result, lineNum+lines[i])
+					}
+				} else if invert {
+					for ii := range lines {
+						if lines[ii] == "" {
+							continue
+						}
+						if !strings.Contains(lines[ii], pattern) {
+							result = append(result, lineNum+lines[ii])
+							//fmt.Println([]byte(lineNum+lines[ii]))
+						}
+					}
+					//fmt.Println(len(result))
+					break
 				} else {
 					result = append(result, lineNum+lines[i])
 				}
