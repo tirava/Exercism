@@ -44,15 +44,19 @@ func Forth(in []string) ([]int, error) {
 
 			arg2 = strings.Join(split[2:len(split)-1], " ")
 
-			if _, ok := ev.customOpers[arg2]; ok {
-				ev.customOpers[arg1] = ev.customOpers[arg2]
+			if _, ok := ev.customOpers[split[2]]; ok {
+				if arg1 != split[2] {
+					ev.customOpers[arg1] = ev.customOpers[arg2]
+				} else {
+					ev.customOpers[arg1] = ev.customOpers[arg1] + " " + strings.Join(split[3:len(split)-1], " ")
+				}
+
 				continue
 			}
 
 			ev.customOpers[arg1] = arg2
 		}
 
-		//fmt.Println(ev.customOpers)
 		for k, v := range ev.customOpers {
 			command = strings.ReplaceAll(command, k, v)
 		}
