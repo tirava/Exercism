@@ -16,9 +16,36 @@ type evaluator struct {
 
 // Forth returns evaluated result.
 func Forth(in []string) ([]int, error) {
-	var stack []int
+	var (
+		stack   []int
+		command string
+	)
 	ev := newEval()
-	command := in[len(in)-1]
+
+	command = strings.ToLower(in[len(in)-1])
+
+	if len(in) > 1 {
+		var arg1, arg2 string
+
+		for i := 0; i < len(in)-1; i++ {
+			in[i] = strings.ToLower(in[i])
+
+			split := strings.Split(in[i], " ")
+			if split[0] != ":" {
+				return nil, errors.New("invalid custom prefix")
+			}
+
+			arg1 = split[1]
+			_, err := strconv.Atoi(arg1)
+			if err == nil {
+				return nil, errors.New("invalid custom command")
+			}
+
+			arg2 = strings.Join(split[2:len(split)-1], " ")
+		}
+
+		command = strings.ReplaceAll(command, arg1, arg2)
+	}
 
 	split := strings.Split(command, " ")
 	for _, val := range split {
@@ -26,8 +53,6 @@ func Forth(in []string) ([]int, error) {
 
 		arg, err := strconv.Atoi(val)
 		if err != nil {
-			//var validOperation bool
-
 			oper, ok := ev.custom[val]
 			if ok {
 				validOperation = true
