@@ -28,7 +28,8 @@ func Forth(in []string) ([]int, error) {
 		if err != nil {
 			//var validOperation bool
 
-			if _, ok := ev.custom[val]; ok {
+			oper, ok := ev.custom[val]
+			if ok {
 				validOperation = true
 			}
 
@@ -56,19 +57,18 @@ func Forth(in []string) ([]int, error) {
 				return nil, err
 			}
 
-			//fmt.Println("stack before result:", stack, ev.arg1, ev.arg2, ev.operation)
 			stack = append(stack, ev.result)
-			//fmt.Println("stack before cut:", stack)
+
 			if !validOperation {
 				stack = stack[2:3]
 				continue
 			}
 
-			//fmt.Println("stack:", stack, val)
-
-			//stack = stack[2:3]
-			//continue
+			if oper == "drop" {
+				stack = stack[:len(stack)-2]
+			}
 		}
+
 		if !validOperation {
 			stack = append(stack, arg)
 		}
@@ -80,7 +80,8 @@ func Forth(in []string) ([]int, error) {
 func newEval() evaluator {
 	return evaluator{
 		custom: map[string]string{
-			"dup": "dup",
+			"dup":  "dup",
+			"drop": "drop",
 		},
 	}
 }
@@ -98,7 +99,7 @@ func (ev *evaluator) doOperation() error {
 			return errors.New("divide by zero")
 		}
 		ev.result = ev.arg1 / ev.arg2
-	case "dup":
+	case "dup", "drop":
 		ev.result = ev.arg1
 	default:
 		return errors.New("invalid operation")
