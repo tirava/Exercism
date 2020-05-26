@@ -8,10 +8,11 @@ import (
 )
 
 type evaluator struct {
-	arg1, arg2 int
-	operation  string
-	result     int
-	custom     map[string]string
+	arg1, arg2  int
+	operation   string
+	result      int
+	defOpers    map[string]string
+	customOpers map[string]string
 }
 
 // Forth returns evaluated result.
@@ -42,9 +43,20 @@ func Forth(in []string) ([]int, error) {
 			}
 
 			arg2 = strings.Join(split[2:len(split)-1], " ")
+
+			if _, ok := ev.customOpers[arg2]; ok {
+				ev.customOpers[arg1] = ev.customOpers[arg2]
+				continue
+			}
+
+			ev.customOpers[arg1] = arg2
 		}
 
-		command = strings.ReplaceAll(command, arg1, arg2)
+		//fmt.Println(ev.customOpers)
+		for k, v := range ev.customOpers {
+			command = strings.ReplaceAll(command, k, v)
+		}
+		//command = strings.ReplaceAll(command, arg1, arg2)
 	}
 
 	split := strings.Split(command, " ")
@@ -53,7 +65,7 @@ func Forth(in []string) ([]int, error) {
 
 		arg, err := strconv.Atoi(val)
 		if err != nil {
-			oper, ok := ev.custom[val]
+			oper, ok := ev.defOpers[val]
 			if ok {
 				validOperation = true
 			}
@@ -117,12 +129,13 @@ func Forth(in []string) ([]int, error) {
 
 func newEval() evaluator {
 	return evaluator{
-		custom: map[string]string{
+		defOpers: map[string]string{
 			"dup":  "dup",
 			"drop": "drop",
 			"swap": "swap",
 			"over": "over",
 		},
+		customOpers: make(map[string]string),
 	}
 }
 
