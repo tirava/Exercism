@@ -74,6 +74,11 @@ func Forth(in []string) ([]int, error) {
 
 				stack = stack[:len(stack)-1]
 				stack[len(stack)-1], stack[len(stack)-2] = stack[len(stack)-2], stack[len(stack)-1]
+			case "over":
+				if len(stack) < 3 {
+					return nil, errors.New("too many arguments for over")
+				}
+				stack[len(stack)-1] = stack[len(stack)-3]
 			}
 		}
 
@@ -91,6 +96,7 @@ func newEval() evaluator {
 			"dup":  "dup",
 			"drop": "drop",
 			"swap": "swap",
+			"over": "over",
 		},
 	}
 }
@@ -108,7 +114,7 @@ func (ev *evaluator) doOperation() error {
 			return errors.New("divide by zero")
 		}
 		ev.result = ev.arg1 / ev.arg2
-	case "dup", "drop", "swap":
+	case "dup", "drop", "swap", "over":
 		ev.result = ev.arg1
 	default:
 		return errors.New("invalid operation")
