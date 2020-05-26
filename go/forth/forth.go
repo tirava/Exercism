@@ -21,36 +21,57 @@ func Forth(in []string) ([]int, error) {
 	command := in[len(in)-1]
 
 	split := strings.Split(command, " ")
-	for i, val := range split {
+	for _, val := range split {
+		var validOperation bool
+
 		arg, err := strconv.Atoi(val)
 		if err != nil {
-			if len(stack) < 2 {
-				return nil, errors.New("invalid arguments")
+			//var validOperation bool
+
+			if _, ok := ev.custom[val]; ok {
+				validOperation = true
 			}
 
 			ev.operation = val
+
+			if len(stack) < 2 {
+				if !validOperation {
+					return nil, errors.New("invalid arguments")
+				}
+
+				if len(stack) == 0 {
+					return nil, errors.New("empty arguments")
+				}
+
+				ev.arg1 = stack[0]
+			} else {
+				if validOperation {
+					ev.arg1 = stack[len(stack)-1]
+				} else {
+					ev.arg1, ev.arg2 = stack[0], stack[1]
+				}
+			}
+
 			if err := ev.doOperation(); err != nil {
 				return nil, err
 			}
 
+			//fmt.Println("stack before result:", stack, ev.arg1, ev.arg2, ev.operation)
 			stack = append(stack, ev.result)
-			stack = stack[2:3]
+			//fmt.Println("stack before cut:", stack)
+			if !validOperation {
+				stack = stack[2:3]
+				continue
+			}
 
-			continue
+			//fmt.Println("stack:", stack, val)
+
+			//stack = stack[2:3]
+			//continue
 		}
-
-		stack = append(stack, arg)
-
-		if i > 1 {
-			continue
+		if !validOperation {
+			stack = append(stack, arg)
 		}
-
-		if i%2 == 0 {
-			ev.arg1 = arg
-			continue
-		}
-
-		ev.arg2 = arg
 	}
 
 	return stack, nil
@@ -58,7 +79,9 @@ func Forth(in []string) ([]int, error) {
 
 func newEval() evaluator {
 	return evaluator{
-		custom: make(map[string]string),
+		custom: map[string]string{
+			"dup": "dup",
+		},
 	}
 }
 
@@ -75,6 +98,8 @@ func (ev *evaluator) doOperation() error {
 			return errors.New("divide by zero")
 		}
 		ev.result = ev.arg1 / ev.arg2
+	case "dup":
+		ev.result = ev.arg1
 	default:
 		return errors.New("invalid operation")
 	}
