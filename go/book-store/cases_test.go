@@ -11,7 +11,7 @@ var testCases = []struct {
 }{
 	{
 		description: "Only a single book",
-		basket:      []int{1, 1, 2, 2, 3, 3, 4, 5},
+		basket:      []int{1},
 		expected:    800,
 	},
 	{

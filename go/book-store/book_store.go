@@ -2,67 +2,77 @@
 //more sales of different books from a popular 5 book series.
 package bookstore
 
-import "fmt"
+const max = 5
+const price = 800
 
-// Cost calculates best books cost.
-func Cost(books []int) int {
-	var diffs [][]int
+var discounts = [max]int{0, 5, 10, 20, 25}
+var replacers = []struct {
+	to   int
+	from [2]int
+}{{to: 3, from: [2]int{2, 4}}}
 
-	copyBooks := make([]int, len(books))
-	copy(copyBooks, books)
+const bookLimit = 100000000
 
-	for ind := 0; ; ind++ {
-		diffs = append(diffs, []int{})
-		for i := 1; i <= 5; i++ {
-			for j, b := range copyBooks {
-				if i == b {
-					diffs[ind] = append(diffs[ind], b)
-					copyBooks = remove(copyBooks, j)
-					break
-				}
-			}
+func min(a, b int) int {
+	if a == 0 || b == 0 {
+		return 0
+	}
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func counter(a []int) (m []int) {
+	m = make([]int, max)
+	for _, x := range a {
+		m[x-1]++
+	}
+	return m
+}
+
+func floorMin(m *[]int) (zero, min int) {
+	min = bookLimit
+	for i := 0; i < max; i++ {
+		if (*m)[i] < 1 {
+			zero++
+			continue
 		}
+		if (*m)[i] < min {
+			min = (*m)[i]
+		}
+	}
+	for i := 0; i < max; i++ {
+		(*m)[i] -= min
+	}
+	return
+}
 
-		if len(diffs[ind]) == 0 {
-			diffs = diffs[:len(diffs)-1]
-			//copy(copyBooks, books)
+func decOrder(count []int) (groups []int) {
+	groups = make([]int, max)
+	for i := 0; i < max; i++ {
+		z, mn := floorMin(&count)
+		if z == max {
 			break
 		}
+		groups[max-z-1] = mn
 	}
-
-	for _, diff := range diffs {
-		fmt.Println(diff)
+	// 2 groups of 4 better than a group of five and a four
+	for _, rep := range replacers {
+		add := min(groups[rep.from[0]], groups[rep.from[1]])
+		groups[rep.from[0]] -= add
+		groups[rep.from[1]] -= add
+		groups[rep.to] += add * 2
 	}
-
-	fmt.Println("copy books:", copyBooks)
-
-	fmt.Println("gen index:")
-	for _, i := range genIndex() {
-		fmt.Println(i)
-	}
-
-	return 0
+	return
 }
 
-func remove(s []int, i int) []int {
-	s[len(s)-1], s[i] = s[i], s[len(s)-1]
-	return s[:len(s)-1]
-}
-
-func genIndex() [][]int {
-	var result [][]int
-	d := []int{0, 5, 9, 12, 14}
-
-	for i := 1; i <= 5; i++ {
-		for k := i; k <= 5; k++ {
-			result = append(result, make([]int, i))
-		}
-		for m := 1; m <= i; m++ {
-			for j := 1; j <= 5-i+1; j++ {
-				result[j+d[i-1]-1][m-1] = m
-			}
-		}
+// Cost calculates best books cost.
+func Cost(books []int) (res int) {
+	booksC := counter(books)
+	groups := decOrder(booksC)
+	for i, g := range groups {
+		res += g * price * (i + 1) * (100 - discounts[i]) / 100
 	}
-
-	return result
+	return res
 }
