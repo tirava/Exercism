@@ -51,18 +51,18 @@ func TestBasicCompute2(t *testing.T) {
 	assertCellValue(t, c, 12, "c.Value() isn't properly computed when second input cell value changes")
 }
 
-//// Compute 2 cells can depend on compute 1 cells.
-//func TestCompute2Diamond(t *testing.T) {
-//	r := New()
-//	i := r.CreateInput(1)
-//	c1 := r.CreateCompute1(i, func(v int) int { return v + 1 })
-//	c2 := r.CreateCompute1(i, func(v int) int { return v - 1 })
-//	c3 := r.CreateCompute2(c1, c2, func(v1, v2 int) int { return v1 * v2 })
-//	assertCellValue(t, c3, 0, "c3.Value() isn't properly computed based on initial input cell value")
-//	i.SetValue(3)
-//	assertCellValue(t, c3, 8, "c3.Value() isn't properly computed based on changed input cell value")
-//}
-//
+// Compute 2 cells can depend on compute 1 cells.
+func TestCompute2Diamond(t *testing.T) {
+	r := New()
+	i := r.CreateInput(1)
+	c1 := r.CreateCompute1(i, func(v int) int { return v + 1 })
+	c2 := r.CreateCompute1(i, func(v int) int { return v - 1 })
+	c3 := r.CreateCompute2(c1, c2, func(v1, v2 int) int { return v1 * v2 })
+	assertCellValue(t, c3, 0, "c3.Value() isn't properly computed based on initial input cell value")
+	i.SetValue(3)
+	assertCellValue(t, c3, 8, "c3.Value() isn't properly computed based on changed input cell value")
+}
+
 //// Compute 1 cells can depend on other compute 1 cells.
 //func TestCompute1Chain(t *testing.T) {
 //	r := New()
